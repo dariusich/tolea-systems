@@ -83,8 +83,8 @@ export default function Dashboard() {
   const [error, setError] = useState("");
   const [lastRefresh, setLastRefresh] = useState(null);
 
-  const accountPath = useCallback((accountSlug) => (token ? `/share/${token}/a/${accountSlug}` : `/a/${accountSlug}`), [token]);
-  const accountsPath = token ? `/share/${token}` : "/";
+  const accountPath = useCallback((accountSlug) => (token ? `/share/${token}/a/${accountSlug}` : `/live-results/a/${accountSlug}`), [token]);
+  const accountsPath = token ? `/share/${token}` : "/live-results";
 
   const load = useCallback(async () => {
     setError("");
@@ -228,7 +228,7 @@ function Shell({ children, lastRefresh, accounts = [], account = null, onAccount
   return (
     <div className="dashboard-shell">
       <aside className="sidebar">
-        <Link className="sidebar-brand" to="/">
+        <Link className="sidebar-brand" to="/live-results">
           <span className="logo-pulse"><Activity size={24} /></span>
           <span>
             <strong>Tolea Systems</strong>
@@ -311,7 +311,7 @@ function AccountOverview({ accounts, token }) {
       <div className="account-grid">
         {accounts.map((account) => (
           <div className="account-block" key={account.account_id}>
-            <button className="account-card" type="button" onClick={() => navigate(token ? `/share/${token}/a/${account.slug}` : `/a/${account.slug}`)}>
+            <button className="account-card" type="button" onClick={() => navigate(token ? `/share/${token}/a/${account.slug}` : `/live-results/a/${account.slug}`)}>
               <span className="account-platform">{account.platform}</span>
               <ExternalLink size={18} />
               <div>
