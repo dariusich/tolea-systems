@@ -1,6 +1,19 @@
-import { Activity, ExternalLink, RefreshCw, Server } from "lucide-react";
+import {
+  Activity,
+  BarChart3,
+  Bell,
+  CalendarDays,
+  ExternalLink,
+  FileText,
+  Home,
+  LineChart,
+  RefreshCw,
+  Server,
+  Settings,
+  WalletCards
+} from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { tradeApi } from "../api.js";
 import CalendarPnL from "../components/CalendarPnL.jsx";
 import EquityCurve from "../components/EquityCurve.jsx";
@@ -15,6 +28,15 @@ function money(value, currency) {
   }).format(Number(value || 0));
 }
 
+function compactMoney(value, currency) {
+  return new Intl.NumberFormat(undefined, {
+    style: "currency",
+    currency: currency || "USD",
+    notation: "compact",
+    maximumFractionDigits: 1
+  }).format(Number(value || 0));
+}
+
 function relativeTime(value) {
   if (!value) return "Never";
   const seconds = Math.max(0, Math.floor((Date.now() - new Date(value).getTime()) / 1000));
@@ -25,11 +47,12 @@ function relativeTime(value) {
 }
 
 function net(trade) {
-  return Number(trade.net_profit ?? trade.profit + trade.swap + trade.commission);
+  return Number(trade.net_profit ?? Number(trade.profit || 0) + Number(trade.swap || 0) + Number(trade.commission || 0));
 }
 
 export default function Dashboard() {
   const { token, slug } = useParams();
+  const navigate = useNavigate();
   const [accounts, setAccounts] = useState([]);
   const [account, setAccount] = useState(null);
   const [stats, setStats] = useState(null);
@@ -42,12 +65,22 @@ export default function Dashboard() {
   const [error, setError] = useState("");
   const [lastRefresh, setLastRefresh] = useState(null);
 
+  const accountPath = useCallback((accountSlug) => (token ? `/share/${token}/a/${accountSlug}` : `/a/${accountSlug}`), [token]);
+  const accountsPath = token ? `/share/${token}` : "/";
+
   const load = useCallback(async () => {
     setError("");
+    const accountsData = await tradeApi.accounts(token);
+    const nextAccounts = accountsData.accounts || [];
+    setAccounts(nextAccounts);
+
     if (!slug) {
-      const data = await tradeApi.accounts(token);
-      setAccounts(data.accounts || []);
       setAccount(null);
+      setStats(null);
+      setDays([]);
+      setTradesByDay({});
+      setEquity([]);
+      setTrades([]);
     } else {
       const [accountData, statsData, dailyData, equityData, tradesData] = await Promise.all([
         tradeApi.account(token, slug),
@@ -63,6 +96,7 @@ export default function Dashboard() {
       setEquity(equityData.equity || []);
       setTrades(tradesData.trades || []);
     }
+
     setLastRefresh(new Date());
     setLoading(false);
   }, [slug, token]);
@@ -87,65 +121,53 @@ export default function Dashboard() {
     };
   }, [load]);
 
+  const accountCurrency = account?.currency || "USD";
   const selectedTrades = useMemo(() => {
     if (!selectedDate) return trades;
     return trades.filter((trade) => trade.close_time?.slice(0, 10) === selectedDate);
   }, [selectedDate, trades]);
+  const dayProfit = selectedTrades.reduce((sum, trade) => sum + net(trade), 0);
+  const recentTrades = useMemo(() => [...trades].slice(0, 6), [trades]);
+  const symbolPerformance = useMemo(() => groupBySymbol(trades), [trades]);
 
   if (loading) {
     return (
-      <main className="app-shell">
+      <Shell lastRefresh={lastRefresh}>
         <div className="loading-block">Loading Tolea Systems...</div>
-      </main>
+      </Shell>
     );
   }
 
   if (error) {
     return (
-      <main className="app-shell">
-        <Header lastRefresh={lastRefresh} />
+      <Shell lastRefresh={lastRefresh}>
         <div className="error-panel">{error}</div>
-      </main>
+      </Shell>
     );
   }
 
   if (!slug) {
     return (
-      <main className="app-shell">
-        <Header lastRefresh={lastRefresh} />
+      <Shell lastRefresh={lastRefresh}>
         <AccountOverview accounts={accounts} token={token} />
-      </main>
+      </Shell>
     );
   }
 
-  const dayProfit = selectedTrades.reduce((sum, trade) => sum + net(trade), 0);
-  const accountCurrency = account?.currency || "USD";
-
   return (
-    <main className="app-shell">
-      <Header lastRefresh={lastRefresh} />
-      <div className="detail-topbar">
-        <Link to={token ? `/share/${token}` : "/"}>Accounts</Link>
-        <span>/</span>
-        <strong>{account?.display_name || account?.name}</strong>
-      </div>
-
-      <section className="account-hero">
+    <Shell lastRefresh={lastRefresh} accounts={accounts} account={account} onAccountChange={(nextSlug) => navigate(accountPath(nextSlug))}>
+      <div className="dashboard-title">
         <div>
-          <span className="eyebrow">{account?.platform} / {account?.server || "Unknown server"}</span>
-          <h1>{account?.display_name || account?.name}</h1>
-          <p>{account?.broker || "Broker unavailable"} · Login {account?.login}</p>
+          <h1>Overview</h1>
+          <p>Your trading performance at a glance</p>
         </div>
-        <div className="hero-metrics">
-          <Metric label="Balance" value={money(account?.balance, accountCurrency)} />
-          <Metric label="Equity" value={money(account?.equity, accountCurrency)} />
-          <Metric label="Floating" value={money(account?.floating_pl, accountCurrency)} tone={Number(account?.floating_pl || 0) >= 0 ? "positive" : "negative"} />
-        </div>
-      </section>
+        <Link className="soft-link" to={accountsPath}>All accounts</Link>
+      </div>
 
       <StatsPanel stats={stats} account={account} />
 
-      <div className="main-grid">
+      <div className="dashboard-grid">
+        <EquityCurve data={equity} currency={accountCurrency} />
         <CalendarPnL
           days={days}
           tradesByDay={tradesByDay}
@@ -153,47 +175,87 @@ export default function Dashboard() {
           selectedDate={selectedDate}
           onSelectDate={setSelectedDate}
         />
-        <EquityCurve data={equity} currency={accountCurrency} />
       </div>
 
       <section className="day-drilldown">
         <div>
           <span className="eyebrow">{selectedDate || "All closed trades"}</span>
-          <h2>{money(dayProfit, accountCurrency)}</h2>
+          <h2 className={dayProfit >= 0 ? "positive" : "negative"}>{money(dayProfit, accountCurrency)}</h2>
         </div>
         {selectedDate && <button type="button" onClick={() => setSelectedDate(null)}>Clear day</button>}
       </section>
 
-      <TradesTable
-        trades={selectedTrades}
-        currency={accountCurrency}
-        title={selectedDate ? `Trades on ${selectedDate}` : "All Closed Trades"}
-      />
-    </main>
+      <div className="bottom-grid">
+        <TradesTable
+          trades={selectedDate ? selectedTrades : recentTrades}
+          currency={accountCurrency}
+          title={selectedDate ? `Trades on ${selectedDate}` : "Recent Trades"}
+        />
+        <SymbolPerformance symbols={symbolPerformance} currency={accountCurrency} />
+      </div>
+    </Shell>
   );
 }
 
-function Header({ lastRefresh }) {
+function Shell({ children, lastRefresh, accounts = [], account = null, onAccountChange }) {
   return (
-    <header className="app-header">
-      <div>
-        <span className="brand-mark"><Activity size={18} /> Tolea Systems</span>
-        <p>Real account data, local-first storage, read-only cloud views.</p>
-      </div>
-      <div className="refresh-status">
-        <RefreshCw size={16} />
-        <span>{lastRefresh ? `Updated ${lastRefresh.toLocaleTimeString()}` : "Waiting for data"}</span>
-      </div>
-    </header>
-  );
-}
+    <div className="dashboard-shell">
+      <aside className="sidebar">
+        <Link className="sidebar-brand" to="/">
+          <span className="logo-pulse"><Activity size={24} /></span>
+          <span>
+            <strong>Tolea Systems</strong>
+            <small>Trading Dashboard</small>
+          </span>
+        </Link>
+        <nav className="sidebar-nav" aria-label="Main navigation">
+          <NavItem active icon={Home} label="Overview" />
+          <NavItem icon={CalendarDays} label="Calendar" />
+          <NavItem icon={LineChart} label="Trades" />
+          <NavItem icon={BarChart3} label="Analytics" />
+          <NavItem icon={FileText} label="Reports" />
+          <NavItem icon={WalletCards} label="Accounts" />
+          <NavItem icon={Settings} label="Settings" />
+        </nav>
+      </aside>
 
-function Metric({ label, value, tone = "neutral" }) {
-  return (
-    <div className="hero-metric">
-      <span>{label}</span>
-      <strong className={tone}>{value}</strong>
+      <main className="app-shell">
+        <header className="app-header">
+          <div className="header-spacer" />
+          <div className="header-actions">
+            {accounts.length > 0 && account && (
+              <select className="account-select" value={account.slug} onChange={(event) => onAccountChange?.(event.target.value)}>
+                {accounts.map((item) => (
+                  <option key={item.account_id} value={item.slug}>
+                    {item.platform} {item.login}
+                  </option>
+                ))}
+              </select>
+            )}
+            <div className="refresh-status">
+              <span className="status-dot" />
+              <span>{accounts.length || account ? `${accounts.length || 1} connected` : "Waiting"}</span>
+            </div>
+            <button className="icon-button" type="button" title={lastRefresh ? `Updated ${lastRefresh.toLocaleTimeString()}` : "Waiting for data"}>
+              <RefreshCw size={16} />
+            </button>
+            <button className="icon-button" type="button" title="Notifications">
+              <Bell size={16} />
+            </button>
+          </div>
+        </header>
+        {children}
+      </main>
     </div>
+  );
+}
+
+function NavItem({ icon: Icon, label, active = false }) {
+  return (
+    <span className={`nav-item ${active ? "active" : ""}`}>
+      <Icon size={17} />
+      {label}
+    </span>
   );
 }
 
@@ -201,36 +263,81 @@ function AccountOverview({ accounts, token }) {
   if (!accounts.length) {
     return (
       <section className="empty-state">
-        <Server size={28} />
+        <Server size={34} />
         <h1>No accounts synced yet.</h1>
-        <p>The dashboard will populate as soon as the collector receives real MT4 or MT5 data.</p>
+        <p>The dashboard will populate as soon as the VPS collector sends real MT4 or MT5 data.</p>
       </section>
     );
   }
 
   return (
     <section>
-      <div className="section-heading account-list-heading">
-        <h1>Accounts</h1>
-        <span>{accounts.length} connected</span>
+      <div className="dashboard-title">
+        <div>
+          <h1>Accounts</h1>
+          <p>Select an account to open the PnL calendar, equity curve, and trade details.</p>
+        </div>
       </div>
       <div className="account-grid">
         {accounts.map((account) => (
           <Link className="account-card" to={token ? `/share/${token}/a/${account.slug}` : `/a/${account.slug}`} key={account.account_id}>
             <span className="account-platform">{account.platform}</span>
+            <ExternalLink size={18} />
             <div>
               <h2>{account.display_name || account.name}</h2>
-              <p>{account.broker || "Broker unavailable"} · {account.server || "Server unavailable"}</p>
+              <p>{account.broker || "Broker unavailable"} / {account.server || "Server unavailable"}</p>
             </div>
             <div className="account-card-metrics">
+              <span>Balance <strong>{money(account.balance, account.currency)}</strong></span>
               <span>Equity <strong>{money(account.equity, account.currency)}</strong></span>
               <span>Floating <strong className={Number(account.floating_pl || 0) >= 0 ? "positive" : "negative"}>{money(account.floating_pl, account.currency)}</strong></span>
             </div>
             <small>Last sync {relativeTime(account.last_sync_at)}</small>
-            <ExternalLink size={18} />
           </Link>
         ))}
       </div>
     </section>
   );
+}
+
+function SymbolPerformance({ symbols, currency }) {
+  const max = Math.max(...symbols.map((item) => Math.abs(item.profit)), 1);
+
+  return (
+    <section className="symbol-panel">
+      <div className="section-heading">
+        <h2>Performance by Symbol</h2>
+        <span>Last synced data</span>
+      </div>
+      {!symbols.length ? (
+        <div className="empty-panel">No symbol performance yet.</div>
+      ) : (
+        <div className="symbol-list">
+          {symbols.slice(0, 6).map((item) => (
+            <div className="symbol-row" key={item.symbol}>
+              <span className="symbol-badge">{item.symbol.slice(0, 2)}</span>
+              <strong>{item.symbol}</strong>
+              <div className="symbol-bar">
+                <span className={item.profit >= 0 ? "bar-positive" : "bar-negative"} style={{ width: `${Math.max(8, (Math.abs(item.profit) / max) * 100)}%` }} />
+              </div>
+              <span className={item.profit >= 0 ? "positive" : "negative"}>{compactMoney(item.profit, currency)}</span>
+              <small>{item.trades}</small>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function groupBySymbol(trades) {
+  const grouped = new Map();
+  for (const trade of trades) {
+    const symbol = trade.symbol || "UNKNOWN";
+    const current = grouped.get(symbol) || { symbol, profit: 0, trades: 0 };
+    current.profit += net(trade);
+    current.trades += 1;
+    grouped.set(symbol, current);
+  }
+  return [...grouped.values()].sort((a, b) => Math.abs(b.profit) - Math.abs(a.profit));
 }

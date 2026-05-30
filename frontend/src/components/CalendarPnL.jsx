@@ -22,7 +22,8 @@ function buildMonth(date) {
   const month = date.getMonth();
   const first = new Date(year, month, 1);
   const start = new Date(first);
-  start.setDate(first.getDate() - first.getDay());
+  const mondayOffset = (first.getDay() + 6) % 7;
+  start.setDate(first.getDate() - mondayOffset);
   return Array.from({ length: 42 }, (_, index) => {
     const item = new Date(start);
     item.setDate(start.getDate() + index);
@@ -52,7 +53,7 @@ export default function CalendarPnL({ days, tradesByDay, currency, selectedDate,
       </div>
 
       <div className="weekday-grid">
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => <span key={day}>{day}</span>)}
+        {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => <span key={day}>{day}</span>)}
       </div>
 
       <div className="calendar-grid">
@@ -88,4 +89,3 @@ export default function CalendarPnL({ days, tradesByDay, currency, selectedDate,
     </section>
   );
 }
-

@@ -1,3 +1,5 @@
+import { Calculator, Target, TrendingDown, TrendingUp, Trophy, WalletCards } from "lucide-react";
+
 function money(value, currency) {
   return new Intl.NumberFormat(undefined, {
     style: "currency",
@@ -15,25 +17,28 @@ function statTone(value) {
 export default function StatsPanel({ stats, account }) {
   const currency = account?.currency || "USD";
   const items = [
-    { label: "Total PnL", value: money(stats?.total_profit, currency), tone: statTone(stats?.total_profit || 0) },
-    { label: "Win Rate", value: `${Number(stats?.win_rate || 0).toFixed(1)}%`, tone: "neutral" },
-    { label: "Average RR", value: Number(stats?.average_rr || 0).toFixed(2), tone: "neutral" },
-    { label: "Trades", value: stats?.number_of_trades || 0, tone: "neutral" },
-    { label: "Best Day", value: stats?.best_day ? money(stats.best_day.profit, currency) : money(0, currency), tone: "positive" },
-    { label: "Worst Day", value: stats?.worst_day ? money(stats.worst_day.profit, currency) : money(0, currency), tone: "negative" },
-    { label: "Balance", value: money(account?.balance || 0, currency), tone: "neutral" },
-    { label: "Equity", value: money(account?.equity || 0, currency), tone: statTone((account?.equity || 0) - (account?.balance || 0)) }
+    { label: "Total Profit", value: money(stats?.total_profit, currency), tone: statTone(stats?.total_profit || 0), icon: TrendingUp, meta: "net closed PnL" },
+    { label: "Win Rate", value: `${Number(stats?.win_rate || 0).toFixed(1)}%`, tone: "neutral", icon: Target, meta: `${stats?.wins || 0} wins / ${stats?.losses || 0} losses` },
+    { label: "Total Trades", value: stats?.number_of_trades || 0, tone: "neutral", icon: Calculator, meta: "closed positions" },
+    { label: "Profit Factor", value: Number(stats?.average_rr || 0).toFixed(2), tone: "neutral", icon: WalletCards, meta: "avg win / avg loss" },
+    { label: "Best Day", value: stats?.best_day ? money(stats.best_day.profit, currency) : money(0, currency), tone: "positive", icon: Trophy, meta: stats?.best_day?.date || "No winning day" },
+    { label: "Worst Day", value: stats?.worst_day ? money(stats.worst_day.profit, currency) : money(0, currency), tone: "negative", icon: TrendingDown, meta: stats?.worst_day?.date || "No losing day" }
   ];
 
   return (
     <section className="stats-grid" aria-label="Account statistics">
       {items.map((item) => (
         <article className="stat-card" key={item.label}>
-          <span>{item.label}</span>
-          <strong className={item.tone}>{item.value}</strong>
+          <div className={`stat-icon ${item.tone}`}>
+            <item.icon size={18} />
+          </div>
+          <div>
+            <span>{item.label}</span>
+            <strong className={item.tone}>{item.value}</strong>
+            <small>{item.meta}</small>
+          </div>
         </article>
       ))}
     </section>
   );
 }
-
