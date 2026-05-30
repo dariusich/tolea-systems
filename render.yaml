@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: tradejournal-pro
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: TRADEJOURNAL_COLLECTOR_KEY
+        sync: false
+      - key: TRADEJOURNAL_ADMIN_KEY
+        sync: false
+      - key: TRADEJOURNAL_DB_PATH
+        value: /app/db/trades.sqlite
+

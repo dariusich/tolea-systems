@@ -1,0 +1,2 @@
+"""TradeJournal Pro backend package."""
+

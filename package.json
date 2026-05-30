@@ -1,0 +1,59 @@
+{
+  "name": "tradejournal-pro",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local-first MT4/MT5 trading journal with cloud read-only dashboards.",
+  "main": "electron/main.js",
+  "scripts": {
+    "install:frontend": "npm --prefix frontend install",
+    "dev:backend": "python -m backend.main",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:electron": "wait-on http://127.0.0.1:8000/health http://127.0.0.1:5173 && electron .",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "desktop": "concurrently \"npm run dev:frontend\" \"wait-on http://127.0.0.1:5173 && electron .\"",
+    "build:frontend": "npm --prefix frontend run build",
+    "build:backend": "powershell -ExecutionPolicy Bypass -File scripts/build_backend.ps1",
+    "build:exe": "npm run build:frontend && npm run build:backend && electron-builder --win nsis",
+    "test:backend": "python -m pytest",
+    "test:frontend": "npm --prefix frontend run test",
+    "test": "npm run test:backend && npm run build:frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0",
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0",
+    "wait-on": "^8.0.0"
+  },
+  "build": {
+    "appId": "com.tradejournal.pro",
+    "productName": "TradeJournal Pro",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "electron/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "frontend/dist",
+        "to": "frontend/dist"
+      },
+      {
+        "from": "dist/backend",
+        "to": "backend"
+      },
+      {
+        "from": "mt4",
+        "to": "mt4"
+      }
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}
