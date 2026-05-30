@@ -11,7 +11,7 @@ from backend.db import create_share_link, init_db  # noqa: E402
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Create or update a TradeJournal Pro read-only share link.")
+    parser = argparse.ArgumentParser(description="Create or update a Tolea Systems read-only share link.")
     parser.add_argument("--token", default=None, help="Optional custom token. Omit to generate a secure token.")
     parser.add_argument("--account-id", default=None, help="Optional account_id. Omit to share all visible accounts.")
     parser.add_argument("--label", default="Read-only dashboard", help="Internal label.")
@@ -27,4 +27,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

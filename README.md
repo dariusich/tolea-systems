@@ -1,6 +1,6 @@
-# TradeJournal Pro
+# Tolea Systems
 
-TradeJournal Pro is a local-first MT4/MT5 trading journal with SQLite storage, a FastAPI API, a React dashboard, and an Electron desktop wrapper.
+Tolea Systems is a local-first MT4/MT5 trading analytics dashboard with SQLite storage, a FastAPI API, a React dashboard, and an Electron desktop wrapper.
 
 It supports two modes:
 
@@ -76,7 +76,7 @@ python -m backend.collector
 For the MT4-only VPS setup, the shortest command is:
 
 ```powershell
-cd C:\tradejournal-pro
+cd C:\tolea-systems
 powershell -ExecutionPolicy Bypass -File scripts\run_collector_vps.ps1 `
   -ServerUrl "https://your-render-service.onrender.com" `
   -CollectorKey "same-secret-as-render"
@@ -168,7 +168,7 @@ https://your-render-service.onrender.com
 5. On the trading VPS, run:
 
 ```powershell
-cd C:\tradejournal-pro
+cd C:\tolea-systems
 powershell -ExecutionPolicy Bypass -File scripts\run_collector_vps.ps1 `
   -ServerUrl "https://your-render-service.onrender.com" `
   -CollectorKey "<same secret used on Render>"

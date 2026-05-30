@@ -75,7 +75,7 @@ async function createWindow() {
     minWidth: 1100,
     minHeight: 720,
     backgroundColor: "#f6f2ea",
-    title: "TradeJournal Pro",
+    title: "Tolea Systems",
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false

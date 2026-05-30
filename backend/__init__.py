@@ -1,2 +1,1 @@
-"""TradeJournal Pro backend package."""
-
+"""Tolea Systems backend package."""

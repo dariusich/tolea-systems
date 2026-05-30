@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: tradejournal-pro
+    name: tolea-systems
     runtime: docker
     plan: free
     healthCheckPath: /health
@@ -11,4 +11,3 @@ services:
         sync: false
       - key: TRADEJOURNAL_DB_PATH
         value: /app/db/trades.sqlite
-

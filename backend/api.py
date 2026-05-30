@@ -12,7 +12,7 @@ from .config import ADMIN_API_KEY, COLLECTOR_API_KEY, ENABLE_LOCAL_COLLECTOR, PU
 from .models import ApiMessage, ShareLinkIn, SyncPayload
 
 
-app = FastAPI(title="TradeJournal Pro API", version="1.0.0")
+app = FastAPI(title="Tolea Systems API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -67,7 +67,7 @@ def startup() -> None:
 
 @app.get("/health")
 def health() -> dict[str, Any]:
-    return {"ok": True, "name": "TradeJournal Pro API"}
+    return {"ok": True, "name": "Tolea Systems API"}
 
 
 @app.get("/accounts")

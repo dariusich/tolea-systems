@@ -1,5 +1,5 @@
 #property strict
-#property copyright "TradeJournal Pro"
+#property copyright "Tolea Systems"
 #property version   "1.00"
 
 input int PollSeconds = 10;

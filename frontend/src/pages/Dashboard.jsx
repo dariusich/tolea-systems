@@ -95,7 +95,7 @@ export default function Dashboard() {
   if (loading) {
     return (
       <main className="app-shell">
-        <div className="loading-block">Loading TradeJournal Pro...</div>
+        <div className="loading-block">Loading Tolea Systems...</div>
       </main>
     );
   }
@@ -177,7 +177,7 @@ function Header({ lastRefresh }) {
   return (
     <header className="app-header">
       <div>
-        <span className="brand-mark"><Activity size={18} /> TradeJournal Pro</span>
+        <span className="brand-mark"><Activity size={18} /> Tolea Systems</span>
         <p>Real account data, local-first storage, read-only cloud views.</p>
       </div>
       <div className="refresh-status">
@@ -234,4 +234,3 @@ function AccountOverview({ accounts, token }) {
     </section>
   );
 }
-
