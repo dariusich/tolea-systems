@@ -21,6 +21,25 @@ export default function EquityCurve({ data, currency }) {
     return <div className="empty-panel">No closed trades yet.</div>;
   }
 
+  if (data.length === 1) {
+    const onlyPoint = data[0];
+    return (
+      <section className="chart-panel sparse-equity">
+        <div className="section-heading">
+          <h2>Equity Curve</h2>
+          <span>1 closed trade</span>
+        </div>
+        <div className="sparse-equity-body">
+          <span>Current closed PnL</span>
+          <strong className={Number(onlyPoint.equity || 0) >= 0 ? "positive" : "negative"}>
+            {money(onlyPoint.equity, currency)}
+          </strong>
+          <small>{onlyPoint.date}</small>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="chart-panel">
       <div className="section-heading">

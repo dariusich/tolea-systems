@@ -191,20 +191,21 @@ export default function Dashboard() {
         />
       </div>
 
-      <section className="day-drilldown">
-        <div>
-          <span className="eyebrow">{selectedDate || "All closed trades"}</span>
-          <h2 className={dayProfit >= 0 ? "positive" : "negative"}>{money(dayProfit, accountCurrency)}</h2>
-        </div>
-        {selectedDate && <button type="button" onClick={() => setSelectedDate(null)}>Clear day</button>}
-      </section>
-
       <div className="bottom-grid">
-        <TradesTable
-          trades={selectedDate ? selectedTrades : recentTrades}
-          currency={accountCurrency}
-          title={selectedDate ? `Trades on ${selectedDate}` : "Recent Trades"}
-        />
+        <div className="side-stack">
+          <section className="day-drilldown">
+            <div>
+              <span className="eyebrow">{selectedDate || "All closed trades"}</span>
+              <h2 className={dayProfit >= 0 ? "positive" : "negative"}>{money(dayProfit, accountCurrency)}</h2>
+            </div>
+            {selectedDate && <button type="button" onClick={() => setSelectedDate(null)}>Clear day</button>}
+          </section>
+          <TradesTable
+            trades={selectedDate ? selectedTrades : recentTrades}
+            currency={accountCurrency}
+            title={selectedDate ? `Trades on ${selectedDate}` : "Recent Trades"}
+          />
+        </div>
         <div className="side-stack">
           <MyfxbookPanel widget={MYFXBOOK_WIDGET} account={account} />
           <SymbolPerformance symbols={symbolPerformance} currency={accountCurrency} />
@@ -325,7 +326,7 @@ function MyfxbookPanel({ widget, account }) {
     <section className="myfxbook-panel">
       <div className="section-heading">
         <h2>Myfxbook Verification</h2>
-        <a className="mini-link" href={widget.profileUrl} target="_blank" rel="noreferrer">Open</a>
+        <a className="mini-link" href={widget.profileUrl} target="_blank" rel="noreferrer">Open Myfxbook</a>
       </div>
       <div className="myfxbook-widget">
         <div className="myfxbook-top">

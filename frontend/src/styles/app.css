@@ -37,7 +37,7 @@ a {
 
 .dashboard-shell {
   display: grid;
-  grid-template-columns: 244px minmax(0, 1fr);
+  grid-template-columns: 220px minmax(0, 1fr);
   min-height: 100vh;
 }
 
@@ -107,9 +107,9 @@ a {
 }
 
 .app-shell {
-  width: min(100%, 1540px);
-  margin: 0 auto;
-  padding: 24px 28px 40px;
+  width: 100%;
+  max-width: none;
+  padding: 24px 34px 40px;
 }
 
 .app-header {
@@ -357,7 +357,7 @@ a {
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.04fr) minmax(390px, 0.96fr);
+  grid-template-columns: minmax(0, 1.08fr) minmax(390px, 0.92fr);
   gap: 18px;
   align-items: stretch;
 }
@@ -444,6 +444,7 @@ a {
 .myfxbook-widget img {
   display: block;
   width: 100%;
+  max-height: 220px;
   min-height: 148px;
   object-fit: contain;
 }
@@ -478,6 +479,36 @@ a {
 .chart-wrap {
   height: 330px;
   margin-top: 18px;
+}
+
+.sparse-equity-body {
+  display: grid;
+  place-items: center;
+  min-height: 330px;
+  margin-top: 18px;
+  border: 1px dashed #dbe4df;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #fbfdfb, #ffffff);
+  text-align: center;
+}
+
+.sparse-equity-body span {
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.sparse-equity-body strong {
+  display: block;
+  margin: 8px 0 4px;
+  font-size: 34px;
+  line-height: 1;
+}
+
+.sparse-equity-body small {
+  color: #9aa3af;
+  font-size: 12px;
+  font-weight: 760;
 }
 
 .month-controls {
@@ -604,7 +635,6 @@ a {
 }
 
 .day-drilldown {
-  margin: 18px 0;
   padding: 16px 18px;
 }
 
