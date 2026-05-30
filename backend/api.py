@@ -10,6 +10,7 @@ from fastapi.staticfiles import StaticFiles
 from . import db
 from .config import ADMIN_API_KEY, COLLECTOR_API_KEY, ENABLE_LOCAL_COLLECTOR, PUBLIC_TOKEN, ROOT_DIR
 from .models import ApiMessage, ShareLinkIn, SyncPayload
+from .site_api import router as site_router
 
 
 app = FastAPI(title="Tolea Systems API", version="1.0.0")
@@ -21,6 +22,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(site_router)
 
 _collector_started = False
 
