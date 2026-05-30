@@ -1,6 +1,6 @@
 #property strict
 #property copyright "Tolea Systems"
-#property version   "1.10"
+#property version   "1.11"
 
 input int PollSeconds = 10;
 input int LookbackDays = 3650;
@@ -11,6 +11,7 @@ int OnInit()
 {
    FolderCreate(FolderName, FILE_COMMON);
    EventSetTimer(MathMax(1, PollSeconds));
+   Print("TradeJournalBridge v1.11 started for account ", AccountNumber(), ". Sent tickets file: ", SentTicketsFileName());
    return(INIT_SUCCEEDED);
 }
 
@@ -60,6 +61,23 @@ string SentTicketsFileName()
    return FolderName + "\\mt4_" + IntegerToString(AccountNumber()) + "_sent_tickets.txt";
 }
 
+string NormalizeTicketList(string tickets)
+{
+   StringReplace(tickets, "\r", "|");
+   StringReplace(tickets, "\n", "|");
+   StringReplace(tickets, "\t", "|");
+   StringReplace(tickets, " ", "");
+   while(StringFind(tickets, "||", 0) >= 0)
+      StringReplace(tickets, "||", "|");
+   if(StringLen(tickets) == 0)
+      tickets = "|";
+   if(StringSubstr(tickets, 0, 1) != "|")
+      tickets = "|" + tickets;
+   if(StringSubstr(tickets, StringLen(tickets) - 1, 1) != "|")
+      tickets = tickets + "|";
+   return tickets;
+}
+
 string LoadSentTickets()
 {
    string fileName = SentTicketsFileName();
@@ -67,7 +85,7 @@ string LoadSentTickets()
    if(handle == INVALID_HANDLE)
       return "|";
 
-   string tickets = "|";
+   string tickets = "";
    while(!FileIsEnding(handle))
    {
       string ticket = FileReadString(handle);
@@ -75,7 +93,7 @@ string LoadSentTickets()
          tickets = tickets + ticket + "|";
    }
    FileClose(handle);
-   return tickets;
+   return NormalizeTicketList(tickets);
 }
 
 bool WasTicketSent(string tickets, int ticket)
@@ -92,7 +110,7 @@ void MarkTicketSent(int ticket)
       return;
 
    FileSeek(handle, 0, SEEK_END);
-   FileWriteString(handle, IntegerToString(ticket) + "\r\n");
+   FileWriteString(handle, IntegerToString(ticket) + "|");
    FileClose(handle);
 }
 
@@ -118,21 +136,35 @@ void WriteClosedTrades()
 {
    string sentTickets = LoadSentTickets();
    datetime lookback = TimeCurrent() - LookbackDays * 86400;
+   int historyTotal = OrdersHistoryTotal();
+   int exported = 0;
+   int skippedSent = 0;
+   int skippedType = 0;
+   int skippedLookback = 0;
 
    int handle = OpenAppendFile();
    if(handle == INVALID_HANDLE)
       return;
 
-   for(int i = 0; i < OrdersHistoryTotal(); i++)
+   for(int i = 0; i < historyTotal; i++)
    {
       if(!OrderSelect(i, SELECT_BY_POS, MODE_HISTORY))
          continue;
       if(OrderType() != OP_BUY && OrderType() != OP_SELL)
+      {
+         skippedType++;
          continue;
+      }
       if(OrderCloseTime() <= 0 || OrderCloseTime() < lookback)
+      {
+         skippedLookback++;
          continue;
+      }
       if(WasTicketSent(sentTickets, OrderTicket()))
+      {
+         skippedSent++;
          continue;
+      }
 
       string line = "{\"type\":\"trade\"," + AccountJson() +
          ",\"trade\":{\"ticket\":\"" + IntegerToString(OrderTicket()) +
@@ -146,7 +178,13 @@ void WriteClosedTrades()
       FileWriteString(handle, line + "\r\n");
       MarkTicketSent(OrderTicket());
       sentTickets = sentTickets + IntegerToString(OrderTicket()) + "|";
+      exported++;
    }
 
    FileClose(handle);
+   Print("TradeJournalBridge v1.11 history_total=", historyTotal,
+      " exported=", exported,
+      " skipped_sent=", skippedSent,
+      " skipped_type=", skippedType,
+      " skipped_lookback=", skippedLookback);
 }
