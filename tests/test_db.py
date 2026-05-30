@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import os
+
 from backend import db
+from backend import mt4_bridge
 
 
 def payload(account_id: str = "mt5:Broker:1001", ticket: str = "42") -> dict:
@@ -92,3 +95,37 @@ def test_share_link_can_limit_accounts(tmp_path):
     assert allowed == [first["account_id"]]
     assert [account["account_id"] for account in accounts] == [first["account_id"]]
 
+
+def test_known_accounts_get_friendly_names_and_stable_slugs(tmp_path):
+    db.DATABASE_PATH = tmp_path / "trades.sqlite"
+    db.init_db()
+
+    mt4 = payload("mt4:RoboForex-ProCent-5:35115307", "177817658")
+    mt4["account"].update({"platform": "MT4", "login": "35115307", "name": "MT4 35115307"})
+    mt5 = payload("mt5:RoboForex-ECN:77045247", "528866508")
+    mt5["account"].update({"platform": "MT5", "login": "77045247", "name": "MT5 77045247"})
+
+    mt4_result = db.ingest_sync(mt4)
+    mt5_result = db.ingest_sync(mt5)
+
+    assert mt4_result["slug"] == "mt4-35115307"
+    assert mt5_result["slug"] == "mt5-77045247"
+    assert db.get_account_by_slug("mt4-35115307")["display_name"] == "DSys Beta"
+    assert db.get_account_by_slug("mt5-77045247")["display_name"] == "DSys Alpha"
+
+
+def test_mt4_default_spool_paths_ignore_processed_archives(tmp_path, monkeypatch):
+    appdata = tmp_path / "AppData" / "Roaming"
+    folder = appdata / "MetaQuotes" / "Terminal" / "Common" / "Files" / "TradeJournalPro"
+    folder.mkdir(parents=True)
+    active = folder / "mt4_35115307.jsonl"
+    processed = folder / "mt4_35115307.processed-20260530150000.jsonl"
+    active.write_text("", encoding="utf-8")
+    processed.write_text("", encoding="utf-8")
+
+    monkeypatch.setenv("APPDATA", str(appdata))
+    monkeypatch.delenv("TRADEJOURNAL_MT4_SPOOL", raising=False)
+
+    if os.name == "nt":
+        assert mt4_bridge.default_spool_paths() == [active]
+        assert mt4_bridge.processed_spool_paths() == [processed]

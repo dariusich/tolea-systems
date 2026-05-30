@@ -11,7 +11,7 @@ import requests
 
 from . import db
 from .config import DB_DIR, POLL_INTERVAL_SECONDS
-from .mt4_bridge import collect_mt4_payloads
+from .mt4_bridge import collect_mt4_payloads, default_spool_paths, processed_spool_paths
 from .mt5_connector import collect_all_mt5_payloads
 
 
@@ -122,7 +122,10 @@ def collect_payloads() -> list[dict[str, Any]]:
             log(f"MT5 sync skipped: {exc}")
     if ENABLE_MT4:
         try:
-            mt4_payloads = collect_mt4_payloads()
+            active_paths = default_spool_paths()
+            ignored_paths = processed_spool_paths()
+            log(f"MT4 active spool files={len(active_paths)} ignored processed archives={len(ignored_paths)}")
+            mt4_payloads = collect_mt4_payloads(active_paths)
             payloads.extend(mt4_payloads)
             log(f"MT4 collected payloads={len(mt4_payloads)} trades={sum(payload_trade_count(item) for item in mt4_payloads)}")
         except Exception as exc:

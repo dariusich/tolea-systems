@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 
-from .mt4_bridge import collect_mt4_payloads, default_spool_paths
+from .mt4_bridge import collect_mt4_payloads, default_spool_paths, processed_spool_paths
 from .mt5_connector import collect_all_mt5_payloads, discover_mt5_terminals
 
 
@@ -42,10 +42,12 @@ def main() -> None:
 
     if enable_mt4:
         paths = default_spool_paths()
+        ignored_paths = processed_spool_paths()
         print(f"[diagnose] MT4 spool files found: {len(paths)}")
         for path in paths:
             size = path.stat().st_size if path.exists() else 0
             print(f"[diagnose] MT4 spool: {path} ({size} bytes)")
+        print(f"[diagnose] MT4 processed archives ignored: {len(ignored_paths)}")
         try:
             _print_payloads("MT4", collect_mt4_payloads(paths, consume=False))
         except Exception as exc:

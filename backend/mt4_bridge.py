@@ -10,6 +10,10 @@ from typing import Any
 from .db import parse_time
 
 
+ACTIVE_SPOOL_PATTERN = "mt4_*.jsonl"
+PROCESSED_SPOOL_PATTERN = "mt4_*.processed-*.jsonl"
+
+
 def default_spool_paths() -> list[Path]:
     env_paths = [Path(item.strip()) for item in os.getenv("TRADEJOURNAL_MT4_SPOOL", "").split(";") if item.strip()]
     if env_paths:
@@ -19,7 +23,18 @@ def default_spool_paths() -> list[Path]:
     appdata = os.getenv("APPDATA")
     if not appdata:
         return []
-    return list(Path(appdata).glob("MetaQuotes/Terminal/Common/Files/TradeJournalPro/mt4_*.jsonl"))
+    folder = Path(appdata) / "MetaQuotes" / "Terminal" / "Common" / "Files" / "TradeJournalPro"
+    return [path for path in folder.glob(ACTIVE_SPOOL_PATTERN) if ".processed-" not in path.name]
+
+
+def processed_spool_paths() -> list[Path]:
+    if os.name != "nt":
+        return []
+    appdata = os.getenv("APPDATA")
+    if not appdata:
+        return []
+    folder = Path(appdata) / "MetaQuotes" / "Terminal" / "Common" / "Files" / "TradeJournalPro"
+    return list(folder.glob(PROCESSED_SPOOL_PATTERN))
 
 
 def _empty_account(login: str, server: str) -> dict[str, Any]:
@@ -121,4 +136,3 @@ def collect_mt4_payloads(paths: list[Path] | None = None, consume: bool = True) 
     for path in paths or default_spool_paths():
         payloads.extend(read_mt4_bridge_file(path, consume=consume))
     return payloads
-

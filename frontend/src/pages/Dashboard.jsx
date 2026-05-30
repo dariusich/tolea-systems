@@ -51,6 +51,16 @@ function net(trade) {
   return Number(trade.net_profit ?? Number(trade.profit || 0) + Number(trade.swap || 0) + Number(trade.commission || 0));
 }
 
+function accountLabel(account) {
+  if (!account) return "";
+  const display = account.display_name || account.name || `${account.platform} ${account.login}`;
+  return `${display} - ${account.platform} ${account.login}`;
+}
+
+function hasMyfxbookWidget(account) {
+  return account?.platform === "MT4" && String(account?.login) === "35115307";
+}
+
 const MYFXBOOK_WIDGET = {
   name: "DSys Beta",
   accountOid: "12049164",
@@ -207,7 +217,6 @@ export default function Dashboard() {
           />
         </div>
         <div className="side-stack">
-          <MyfxbookPanel widget={MYFXBOOK_WIDGET} account={account} />
           <SymbolPerformance symbols={symbolPerformance} currency={accountCurrency} />
         </div>
       </div>
@@ -246,7 +255,7 @@ function Shell({ children, lastRefresh, accounts = [], account = null, onAccount
               <select className="account-select" value={account.slug} onChange={(event) => onAccountChange?.(event.target.value)}>
                 {accounts.map((item) => (
                   <option key={item.account_id} value={item.slug}>
-                    {item.platform} {item.login}
+                    {accountLabel(item)}
                   </option>
                 ))}
               </select>
@@ -301,29 +310,32 @@ function AccountOverview({ accounts, token }) {
       </div>
       <div className="account-grid">
         {accounts.map((account) => (
-          <button className="account-card" type="button" onClick={() => navigate(token ? `/share/${token}/a/${account.slug}` : `/a/${account.slug}`)} key={account.account_id}>
-            <span className="account-platform">{account.platform}</span>
-            <ExternalLink size={18} />
-            <div>
-              <h2>{account.display_name || account.name}</h2>
-              <p>{account.broker || "Broker unavailable"} / {account.server || "Server unavailable"}</p>
-            </div>
-            <div className="account-card-metrics">
-              <span>Balance <strong>{money(account.balance, account.currency)}</strong></span>
-              <span>Equity <strong>{money(account.equity, account.currency)}</strong></span>
-              <span>Floating <strong className={Number(account.floating_pl || 0) >= 0 ? "positive" : "negative"}>{money(account.floating_pl, account.currency)}</strong></span>
-            </div>
-            <small>Last sync {relativeTime(account.last_sync_at)}</small>
-          </button>
+          <div className="account-block" key={account.account_id}>
+            <button className="account-card" type="button" onClick={() => navigate(token ? `/share/${token}/a/${account.slug}` : `/a/${account.slug}`)}>
+              <span className="account-platform">{account.platform}</span>
+              <ExternalLink size={18} />
+              <div>
+                <h2>{account.display_name || account.name}</h2>
+                <p>{account.broker || "Broker unavailable"} / {account.server || "Server unavailable"}</p>
+              </div>
+              <div className="account-card-metrics">
+                <span>Balance <strong>{money(account.balance, account.currency)}</strong></span>
+                <span>Equity <strong>{money(account.equity, account.currency)}</strong></span>
+                <span>Floating <strong className={Number(account.floating_pl || 0) >= 0 ? "positive" : "negative"}>{money(account.floating_pl, account.currency)}</strong></span>
+              </div>
+              <small>Last sync {relativeTime(account.last_sync_at)}</small>
+            </button>
+            {hasMyfxbookWidget(account) && <MyfxbookPanel widget={MYFXBOOK_WIDGET} account={account} compact />}
+          </div>
         ))}
       </div>
     </section>
   );
 }
 
-function MyfxbookPanel({ widget, account }) {
+function MyfxbookPanel({ widget, account, compact = false }) {
   return (
-    <section className="myfxbook-panel">
+    <section className={`myfxbook-panel ${compact ? "myfxbook-panel-compact" : ""}`}>
       <div className="section-heading">
         <h2>Myfxbook Verification</h2>
         <a className="mini-link" href={widget.profileUrl} target="_blank" rel="noreferrer">Open Myfxbook</a>

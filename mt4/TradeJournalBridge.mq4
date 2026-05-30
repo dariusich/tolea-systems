@@ -1,6 +1,6 @@
 #property strict
 #property copyright "Tolea Systems"
-#property version   "1.00"
+#property version   "1.10"
 
 input int PollSeconds = 10;
 input int LookbackDays = 3650;
@@ -55,6 +55,47 @@ int OpenAppendFile()
    return handle;
 }
 
+string SentTicketsFileName()
+{
+   return FolderName + "\\mt4_" + IntegerToString(AccountNumber()) + "_sent_tickets.txt";
+}
+
+string LoadSentTickets()
+{
+   string fileName = SentTicketsFileName();
+   int handle = FileOpen(fileName, FILE_READ | FILE_TXT | FILE_COMMON);
+   if(handle == INVALID_HANDLE)
+      return "|";
+
+   string tickets = "|";
+   while(!FileIsEnding(handle))
+   {
+      string ticket = FileReadString(handle);
+      if(StringLen(ticket) > 0)
+         tickets = tickets + ticket + "|";
+   }
+   FileClose(handle);
+   return tickets;
+}
+
+bool WasTicketSent(string tickets, int ticket)
+{
+   string needle = "|" + IntegerToString(ticket) + "|";
+   return StringFind(tickets, needle, 0) >= 0;
+}
+
+void MarkTicketSent(int ticket)
+{
+   string fileName = SentTicketsFileName();
+   int handle = FileOpen(fileName, FILE_READ | FILE_WRITE | FILE_TXT | FILE_COMMON);
+   if(handle == INVALID_HANDLE)
+      return;
+
+   FileSeek(handle, 0, SEEK_END);
+   FileWriteString(handle, IntegerToString(ticket) + "\r\n");
+   FileClose(handle);
+}
+
 void WriteSnapshot()
 {
    int handle = OpenAppendFile();
@@ -75,11 +116,7 @@ void WriteSnapshot()
 
 void WriteClosedTrades()
 {
-   string gvName = "TJP_LAST_CLOSE_" + IntegerToString(AccountNumber());
-   datetime lastClose = 0;
-   if(GlobalVariableCheck(gvName))
-      lastClose = (datetime)GlobalVariableGet(gvName);
-   datetime maxClose = lastClose;
+   string sentTickets = LoadSentTickets();
    datetime lookback = TimeCurrent() - LookbackDays * 86400;
 
    int handle = OpenAppendFile();
@@ -94,7 +131,7 @@ void WriteClosedTrades()
          continue;
       if(OrderCloseTime() <= 0 || OrderCloseTime() < lookback)
          continue;
-      if(OrderCloseTime() < lastClose)
+      if(WasTicketSent(sentTickets, OrderTicket()))
          continue;
 
       string line = "{\"type\":\"trade\"," + AccountJson() +
@@ -107,11 +144,9 @@ void WriteClosedTrades()
          ",\"open_time\":\"" + IsoTime(OrderOpenTime()) +
          "\",\"close_time\":\"" + IsoTime(OrderCloseTime()) + "\"}}";
       FileWriteString(handle, line + "\r\n");
-      if(OrderCloseTime() > maxClose)
-         maxClose = OrderCloseTime();
+      MarkTicketSent(OrderTicket());
+      sentTickets = sentTickets + IntegerToString(OrderTicket()) + "|";
    }
 
    FileClose(handle);
-   if(maxClose > lastClose)
-      GlobalVariableSet(gvName, maxClose);
 }

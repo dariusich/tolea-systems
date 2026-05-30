@@ -38,6 +38,26 @@ def slugify(value: str) -> str:
     return text or secrets.token_hex(4)
 
 
+ACCOUNT_DISPLAY_NAMES = {
+    ("MT4", "35115307"): "DSys Beta",
+    ("MT5", "77045247"): "DSys Alpha",
+}
+
+
+def preferred_account_display_name(account: dict[str, Any]) -> str | None:
+    platform = str(account.get("platform") or "").upper()
+    login = str(account.get("login") or "")
+    return ACCOUNT_DISPLAY_NAMES.get((platform, login))
+
+
+def preferred_account_slug(account: dict[str, Any]) -> str | None:
+    platform = str(account.get("platform") or "").lower()
+    login = str(account.get("login") or "")
+    if preferred_account_display_name(account) and platform and login:
+        return f"{platform}-{login}"
+    return None
+
+
 def connect(path: Path | None = None) -> sqlite3.Connection:
     database_path = path or DATABASE_PATH
     database_path.parent.mkdir(parents=True, exist_ok=True)
@@ -160,9 +180,11 @@ def upsert_account(conn: sqlite3.Connection, account: dict[str, Any]) -> dict[st
     account_id = str(account["account_id"])
     existing = conn.execute("SELECT * FROM accounts WHERE account_id = ?", (account_id,)).fetchone()
     existing_data = row_to_dict(existing) if existing else {}
+    preferred_display_name = preferred_account_display_name(account)
     name = account.get("name") or existing_data.get("name") or f"{account.get('platform')} {account.get('login')}"
-    display_name = account.get("display_name") or existing_data.get("display_name") or name
-    slug = existing_data.get("slug") or _unique_slug(conn, display_name, account_id)
+    display_name = preferred_display_name or account.get("display_name") or existing_data.get("display_name") or name
+    slug_base = preferred_account_slug(account) or display_name
+    slug = existing_data.get("slug") or _unique_slug(conn, slug_base, account_id)
     tags = account.get("tags")
     if tags is None:
         tags = existing_data.get("tags", [])
@@ -177,7 +199,7 @@ def upsert_account(conn: sqlite3.Connection, account: dict[str, Any]) -> dict[st
           platform=excluded.platform,
           login=excluded.login,
           name=excluded.name,
-          display_name=COALESCE(NULLIF(excluded.display_name, ''), accounts.display_name),
+          display_name=excluded.display_name,
           strategy=COALESCE(excluded.strategy, accounts.strategy),
           broker=excluded.broker,
           server=excluded.server,
@@ -484,4 +506,3 @@ def trades_by_day(account_id: str) -> dict[str, list[dict[str, Any]]]:
     for trade in get_trades(account_id):
         grouped[trade["close_time"][:10]].append(trade)
     return dict(grouped)
-
