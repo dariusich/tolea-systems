@@ -10,6 +10,7 @@ import {
   RefreshCw,
   Server,
   Settings,
+  ShieldCheck,
   WalletCards
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -49,6 +50,13 @@ function relativeTime(value) {
 function net(trade) {
   return Number(trade.net_profit ?? Number(trade.profit || 0) + Number(trade.swap || 0) + Number(trade.commission || 0));
 }
+
+const MYFXBOOK_WIDGET = {
+  name: "DSys Beta",
+  accountOid: "12049164",
+  profileUrl: "https://www.myfxbook.com/members/dariusch/dsys-beta/12049164",
+  imageUrl: "https://widget.myfxbook.com/widget/widget.png?accountOid=12049164&type=6"
+};
 
 export default function Dashboard() {
   const { token, slug } = useParams();
@@ -130,6 +138,12 @@ export default function Dashboard() {
   const recentTrades = useMemo(() => [...trades].slice(0, 6), [trades]);
   const symbolPerformance = useMemo(() => groupBySymbol(trades), [trades]);
 
+  useEffect(() => {
+    if (!loading && !slug && accounts.length === 1) {
+      navigate(accountPath(accounts[0].slug), { replace: true });
+    }
+  }, [accountPath, accounts, loading, navigate, slug]);
+
   if (loading) {
     return (
       <Shell lastRefresh={lastRefresh}>
@@ -191,7 +205,10 @@ export default function Dashboard() {
           currency={accountCurrency}
           title={selectedDate ? `Trades on ${selectedDate}` : "Recent Trades"}
         />
-        <SymbolPerformance symbols={symbolPerformance} currency={accountCurrency} />
+        <div className="side-stack">
+          <MyfxbookPanel widget={MYFXBOOK_WIDGET} account={account} />
+          <SymbolPerformance symbols={symbolPerformance} currency={accountCurrency} />
+        </div>
       </div>
     </Shell>
   );
@@ -213,6 +230,7 @@ function Shell({ children, lastRefresh, accounts = [], account = null, onAccount
           <NavItem icon={CalendarDays} label="Calendar" />
           <NavItem icon={LineChart} label="Trades" />
           <NavItem icon={BarChart3} label="Analytics" />
+          <NavItem icon={ShieldCheck} label="Myfxbook" />
           <NavItem icon={FileText} label="Reports" />
           <NavItem icon={WalletCards} label="Accounts" />
           <NavItem icon={Settings} label="Settings" />
@@ -260,6 +278,8 @@ function NavItem({ icon: Icon, label, active = false }) {
 }
 
 function AccountOverview({ accounts, token }) {
+  const navigate = useNavigate();
+
   if (!accounts.length) {
     return (
       <section className="empty-state">
@@ -280,7 +300,7 @@ function AccountOverview({ accounts, token }) {
       </div>
       <div className="account-grid">
         {accounts.map((account) => (
-          <Link className="account-card" to={token ? `/share/${token}/a/${account.slug}` : `/a/${account.slug}`} key={account.account_id}>
+          <button className="account-card" type="button" onClick={() => navigate(token ? `/share/${token}/a/${account.slug}` : `/a/${account.slug}`)} key={account.account_id}>
             <span className="account-platform">{account.platform}</span>
             <ExternalLink size={18} />
             <div>
@@ -293,8 +313,32 @@ function AccountOverview({ accounts, token }) {
               <span>Floating <strong className={Number(account.floating_pl || 0) >= 0 ? "positive" : "negative"}>{money(account.floating_pl, account.currency)}</strong></span>
             </div>
             <small>Last sync {relativeTime(account.last_sync_at)}</small>
-          </Link>
+          </button>
         ))}
+      </div>
+    </section>
+  );
+}
+
+function MyfxbookPanel({ widget, account }) {
+  return (
+    <section className="myfxbook-panel">
+      <div className="section-heading">
+        <h2>Myfxbook Verification</h2>
+        <a className="mini-link" href={widget.profileUrl} target="_blank" rel="noreferrer">Open</a>
+      </div>
+      <div className="myfxbook-widget">
+        <div className="myfxbook-top">
+          <strong>my<span>fx</span>book</strong>
+          <small>{widget.name}</small>
+        </div>
+        <a href={widget.profileUrl} target="_blank" rel="noreferrer">
+          <img src={widget.imageUrl} alt={`${widget.name} Myfxbook widget`} loading="lazy" />
+        </a>
+      </div>
+      <div className="myfxbook-meta">
+        <span><ShieldCheck size={15} /> External verification</span>
+        <small>{account?.broker || "Broker"} / {account?.login || "account"}</small>
       </div>
     </section>
   );

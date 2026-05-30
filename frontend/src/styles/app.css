@@ -366,14 +366,113 @@ a {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(360px, 0.92fr);
   gap: 18px;
+  align-items: start;
+}
+
+.side-stack {
+  display: grid;
+  gap: 18px;
 }
 
 .calendar-panel,
 .chart-panel,
 .table-panel,
-.symbol-panel {
+.symbol-panel,
+.myfxbook-panel {
   padding: 20px;
   overflow: visible;
+}
+
+.myfxbook-panel {
+  border: 1px solid #e7e9ee;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.04);
+}
+
+.mini-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0 11px;
+  color: #15803d;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.myfxbook-widget {
+  overflow: hidden;
+  margin-top: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.myfxbook-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 38px;
+  padding: 0 12px;
+  background: #17171f;
+  color: #ffffff;
+}
+
+.myfxbook-top strong {
+  font-size: 18px;
+  letter-spacing: 0;
+}
+
+.myfxbook-top strong span {
+  color: #f59e0b;
+}
+
+.myfxbook-top small {
+  color: #d1d5db;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.myfxbook-widget a {
+  display: block;
+  padding: 12px;
+}
+
+.myfxbook-widget img {
+  display: block;
+  width: 100%;
+  min-height: 148px;
+  object-fit: contain;
+}
+
+.myfxbook-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.myfxbook-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #15803d;
+  font-weight: 850;
+}
+
+.myfxbook-meta small {
+  overflow: hidden;
+  color: #6b7280;
+  font-weight: 720;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .chart-wrap {
@@ -562,7 +661,12 @@ td strong {
   display: grid;
   gap: 16px;
   min-height: 230px;
+  width: 100%;
+  border: 1px solid #e7e9ee;
   padding: 18px;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
   transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
 }
 
@@ -730,7 +834,8 @@ td strong {
   .calendar-panel,
   .chart-panel,
   .table-panel,
-  .symbol-panel {
+  .symbol-panel,
+  .myfxbook-panel {
     padding: 14px;
   }
 
