@@ -26,10 +26,10 @@ CATEGORIES: list[dict[str, Any]] = [
 PRODUCTS: list[dict[str, Any]] = [
     {
         "slug": "aurix-neural-edge-ai",
-        "name": "AURIX Neural Edge AI",
+        "name": "AURIX",
         "category": "expert-advisors",
         "strategy_type": "Gold grid EA",
-        "tagline": "MT4 gold Expert Advisor using trend bias, momentum confirmation, and adaptive recovery spacing.",
+        "tagline": "Gold-focused MT4 Expert Advisor with optimized Tolea Systems set files.",
         "description": (
             "AURIX Neural Edge AI is an MT4 Expert Advisor for XAUUSD. It combines a higher-timeframe "
             "trend bias with short-timeframe momentum confirmation, then manages recovery cycles with "
@@ -43,6 +43,15 @@ PRODUCTS: list[dict[str, Any]] = [
             "Chart visuals for break-even, target, and next grid levels",
             "PnL heatmap and equity sparkline concepts",
             "Layered protection including equity caution and emergency stop concepts",
+        ],
+        "receive": [
+            "Optimized set file",
+            "Custom setup guidance",
+            "Practical installation help",
+            "Recommended broker and account settings",
+            "Risk management settings",
+            "Multiple set file variants",
+            "Support until implementation",
         ],
         "recommended_setup": [
             "Platform: MetaTrader 4",
@@ -67,8 +76,8 @@ PRODUCTS: list[dict[str, Any]] = [
         "profit_factor": 1.78,
         "rating": 4.33,
         "review_count": 11,
-        "price": 0,
-        "compare_at_price": None,
+        "price": 49,
+        "compare_at_price": 98,
         "featured": True,
         "mql5_url": "https://www.mql5.com/en/market/product/174228",
         "myfxbook_url": "https://www.myfxbook.com/portfolio/matrader-ai/12049485",
@@ -87,7 +96,7 @@ PRODUCTS: list[dict[str, Any]] = [
         "name": "MATrader AI",
         "category": "expert-advisors",
         "strategy_type": "XAUUSD AI EA",
-        "tagline": "MT4 Expert Advisor for XAUUSD M1 with adaptive cycle logic and equity protection controls.",
+        "tagline": "XAUUSD M1 MT4 Expert Advisor with optimized set files and implementation support.",
         "description": (
             "MATrader AI is an MT4 Expert Advisor focused on XAUUSD M1. It uses adaptive cycle/grid "
             "logic, neural-style entry filtering, flexible lot handling, and account-level protection "
@@ -101,6 +110,15 @@ PRODUCTS: list[dict[str, Any]] = [
             "Lot flexibility with fixed or balance-scaled sizing",
             "News, time, and day filters for volatile sessions",
             "Profit protection through break-even, trailing, and equity controls",
+        ],
+        "receive": [
+            "Optimized set file",
+            "Custom setup guidance",
+            "Practical installation help",
+            "Recommended broker and account settings",
+            "Risk management settings",
+            "Multiple set file variants",
+            "Support until implementation",
         ],
         "recommended_setup": [
             "Platform: MetaTrader 4",
@@ -125,8 +143,8 @@ PRODUCTS: list[dict[str, Any]] = [
         "profit_factor": 1.62,
         "rating": 4.63,
         "review_count": 146,
-        "price": 0,
-        "compare_at_price": None,
+        "price": 49,
+        "compare_at_price": 98,
         "featured": True,
         "mql5_url": "https://www.mql5.com/en/market/product/147979",
         "myfxbook_url": "https://www.myfxbook.com/portfolio/matrader/12039419",
@@ -137,10 +155,10 @@ PRODUCTS: list[dict[str, Any]] = [
     },
     {
         "slug": "matrader-quickscalper",
-        "name": "MATrader QuickScalper",
+        "name": "QuickScalper",
         "category": "expert-advisors",
         "strategy_type": "Scalping EA",
-        "tagline": "A separate MT4 scalping strategy built for short trade cycles and disciplined execution.",
+        "tagline": "MT4 scalping Expert Advisor prepared with risk-focused custom set files.",
         "description": (
             "MATrader QuickScalper is a separate MT4 Expert Advisor in the MATrader ecosystem. It is "
             "focused on short trade cycles, fast execution, strict trade handling, and cent-account lot "
@@ -154,6 +172,15 @@ PRODUCTS: list[dict[str, Any]] = [
             "Equity stop and deeper-cycle protection controls",
             "Primary HiLo trailing plus optional advanced trailing modules",
             "News filter, Friday close logic, and Monday delayed start logic",
+        ],
+        "receive": [
+            "Optimized set file",
+            "Custom setup guidance",
+            "Practical installation help",
+            "Recommended broker and account settings",
+            "Risk management settings",
+            "Multiple set file variants",
+            "Support until implementation",
         ],
         "recommended_setup": [
             "Platform: MetaTrader 4",
@@ -177,8 +204,8 @@ PRODUCTS: list[dict[str, Any]] = [
         "profit_factor": 1.78,
         "rating": 4.6,
         "review_count": 1,
-        "price": 10999,
-        "compare_at_price": None,
+        "price": 49,
+        "compare_at_price": 98,
         "featured": True,
         "mql5_url": "https://www.mql5.com/en/market/product/158178",
         "myfxbook_url": "https://www.myfxbook.com/portfolio/dsys-beta/12049164",

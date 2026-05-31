@@ -4,15 +4,11 @@ import {
   Bell,
   CalendarDays,
   ExternalLink,
-  FileText,
   Home,
   LineChart,
   PackageOpen,
   RefreshCw,
   Server,
-  Settings,
-  ShieldCheck,
-  WalletCards,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
@@ -239,7 +235,7 @@ export default function Dashboard() {
         <>
           <StatsPanel stats={stats} account={account} />
 
-          <div className="dashboard-grid">
+          <div className="dashboard-grid" id="calendar">
             <EquityCurve data={equity} currency={accountCurrency} />
             <CalendarPnL
               days={days}
@@ -251,7 +247,7 @@ export default function Dashboard() {
           </div>
 
           <div className="bottom-grid">
-            <div className="side-stack">
+            <div className="side-stack" id="trades">
               <section className="day-drilldown">
                 <div>
                   <span className="eyebrow">{selectedDate || "All closed trades"}</span>
@@ -267,7 +263,7 @@ export default function Dashboard() {
                 limit={8}
               />
             </div>
-            <div className="side-stack">
+            <div className="side-stack" id="analytics">
               <SymbolPerformance symbols={symbolPerformance} currency={accountCurrency} />
             </div>
           </div>
@@ -292,13 +288,12 @@ function Shell({ children, lastRefresh, accounts = [], account = null, onAccount
         </Link>
         <nav className="sidebar-nav" aria-label="Main navigation">
           <NavItem to="/" icon={Home} label="Overview" />
-          <NavItem to="/live-results" icon={Activity} label="Live Results" />
           <NavItem to="/systems" icon={PackageOpen} label="Products" />
+          <NavItem to="/live-results" icon={Activity} label="Live Results" />
           <NavItem to="/live-results" icon={CalendarDays} label="Calendar" />
           <NavItem to="/live-results" icon={LineChart} label="Trades" />
           <NavItem to="/live-results" icon={BarChart3} label="Analytics" />
-          <NavItem to="/accounts" icon={WalletCards} label="Accounts" />
-          <NavItem to="/account" icon={Settings} label="Settings" />
+          <NavItem to="/contact" icon={ExternalLink} label="Contact" />
         </nav>
       </aside>
 

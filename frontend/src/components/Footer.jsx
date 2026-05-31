@@ -15,15 +15,15 @@ export default function Footer() {
             </p>
           </div>
           <FooterCol title="Product" links={[
-            ["Marketplace", "/systems"],
+            ["Products", "/systems"],
             ["Live Results", "/live-results"],
-            ["Comparison", "/compare"],
+            ["Contact", "/contact"],
             ["Pricing", "/systems"],
           ]} />
           <FooterCol title="Resources" links={[
-            ["Blog", "/blog"],
-            ["FAQ", "/#faq"],
-            ["Support", "/account"],
+            ["Overview", "/"],
+            ["Calendar", "/live-results#calendar"],
+            ["Trades", "/live-results#trades"],
             ["Sign in", "/login"],
           ]} />
         </div>

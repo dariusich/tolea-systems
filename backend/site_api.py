@@ -15,6 +15,7 @@ router = APIRouter(prefix="/api", tags=["site"])
 
 MYFXBOOK_DSYS_BETA = "https://www.myfxbook.com/members/dariusch/dsys-beta/12049164"
 DEMO_ORDERS: dict[str, dict[str, Any]] = {}
+CONTACT_SUBMISSIONS: list[dict[str, Any]] = []
 
 
 def _now() -> str:
@@ -330,6 +331,23 @@ def can_review(slug: str) -> dict[str, Any]:
 @router.post("/reviews")
 def create_review() -> dict[str, Any]:
     raise HTTPException(status_code=403, detail="Reviews are demo-safe until real customer accounts are connected.")
+
+
+@router.post("/contact")
+def contact(payload: dict[str, Any]) -> dict[str, Any]:
+    submission = {
+        "id": f"contact-{uuid.uuid4().hex[:12]}",
+        "name": str(payload.get("name") or "").strip(),
+        "email": str(payload.get("email") or "").strip(),
+        "product_interest": str(payload.get("product_interest") or "Not sure yet").strip(),
+        "account_size": str(payload.get("account_size") or "").strip(),
+        "broker": str(payload.get("broker") or "").strip(),
+        "message": str(payload.get("message") or "").strip(),
+        "created_at": _now(),
+    }
+    CONTACT_SUBMISSIONS.append(submission)
+    print(f"[contact] {submission['email']} interested in {submission['product_interest']}", flush=True)
+    return {"ok": True, "message": "Thanks. Your request was received.", "submission": submission}
 
 
 @router.get("/blog")

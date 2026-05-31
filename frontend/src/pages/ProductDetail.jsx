@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, ArrowUpRight, Check, ExternalLink, Mail, ShieldAlert, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Check, ChevronLeft, ChevronRight, ExternalLink, Mail, ShieldAlert, ShieldCheck, X } from "lucide-react";
 import { api } from "@/lib/api";
 import { money, percent } from "@/lib/format";
 import PageHelmet from "@/components/PageHelmet";
 
-const DISCLAIMER = "Trading involves risk. Past performance does not guarantee future results.";
+const DISCLAIMER = "Trading involves risk. Past performance does not guarantee future results. Expert Advisors can generate drawdown, especially in volatile market conditions. Use proper risk management.";
+const OPTIMIZATION_NOTE = "At Tolea Systems, we do not simply resell the EA. We test, adjust and optimize the set files for each product in order to reduce drawdown as much as possible and keep the strategy cleaner, safer and more stable. Each client receives the information needed to put the EA into practice, together with custom set files for multiple risk profiles.";
 
 export default function ProductDetail() {
   const { slug } = useParams();
@@ -46,6 +47,12 @@ export default function ProductDetail() {
                   <p className="text-xs font-black uppercase tracking-[0.18em] text-[#6B7280]">{product.strategy_type}</p>
                   <h1 className="mt-2 text-4xl font-black tracking-tight text-[#111827] sm:text-5xl">{product.name}</h1>
                   <p className="mt-4 max-w-3xl text-base leading-7 text-[#6B7280]">{product.tagline}</p>
+                  <div className="mt-5 flex flex-wrap items-center gap-3">
+                    <span className="text-4xl font-black tracking-tight text-[#111827]">{money(product.price)}</span>
+                    <span className="text-lg font-black text-[#9CA3AF] line-through">{money(product.compare_at_price)}</span>
+                    <span className="rounded-full bg-[#F7EFE3] px-3 py-1 text-xs font-black uppercase tracking-[0.12em] text-[#B88745]">Limited offer: $49</span>
+                    <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-[#087F5B]">50% discount from the original price</span>
+                  </div>
                 </div>
               </div>
 
@@ -60,12 +67,9 @@ export default function ProductDetail() {
                 <a className="primary-product-cta" href={product.myfxbook_url} target="_blank" rel="noreferrer">
                   View Results <ArrowUpRight className="h-4 w-4" />
                 </a>
-                <a className="secondary-product-cta" href={product.mql5_url} target="_blank" rel="noreferrer">
-                  View on MQL5 <ExternalLink className="h-4 w-4" />
-                </a>
-                <a className="secondary-product-cta" href={`mailto:contact@toleasystems.com?subject=${encodeURIComponent(product.name)}`}>
+                <Link className="secondary-product-cta" to={`/contact?product=${encodeURIComponent(product.slug)}`}>
                   Contact / Get Access <Mail className="h-4 w-4" />
-                </a>
+                </Link>
               </div>
             </div>
 
@@ -89,6 +93,21 @@ export default function ProductDetail() {
                 </ul>
               </InfoCard>
 
+              <InfoCard title="What you receive">
+                <ul className="feature-list">
+                  {(product.receive || []).map((item) => (
+                    <li key={item}>
+                      <span><Check className="h-3.5 w-3.5" /></span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </InfoCard>
+
+              <InfoCard title="Our optimization note">
+                <p>{OPTIMIZATION_NOTE}</p>
+              </InfoCard>
+
               <GalleryGrid product={product} />
             </div>
 
@@ -98,6 +117,7 @@ export default function ProductDetail() {
                   {(product.recommended_setup || []).map((item) => (
                     <li key={item}>{item}</li>
                   ))}
+                  <li>Risk profile options: Low Risk, Balanced, Aggressive</li>
                 </ul>
               </InfoCard>
 
@@ -108,7 +128,7 @@ export default function ProductDetail() {
                   <Spec label="Timeframe" value={product.timeframe} />
                   <Spec label="Min balance" value={product.min_deposit ? money(product.min_deposit) : "Broker dependent"} />
                   <Spec label="Leverage" value={product.recommended_leverage} />
-                  <Spec label="MQL5 price" value={Number(product.price || 0) === 0 ? "Free" : money(product.price)} />
+                  <Spec label="Limited price" value={`${money(product.price)} (50% off)`} />
                 </dl>
               </InfoCard>
 
@@ -171,6 +191,7 @@ function InfoCard({ title, children }) {
 
 function GalleryGrid({ product }) {
   const gallery = product.gallery || [];
+  const [activeIndex, setActiveIndex] = useState(null);
   if (!gallery.length) {
     return (
       <InfoCard title="Gallery">
@@ -178,7 +199,7 @@ function GalleryGrid({ product }) {
           <div>
             <img src={product.logo} alt={`${product.name} logo`} className="mx-auto h-24 w-24 rounded-2xl object-cover" />
             <p className="mt-4 max-w-sm text-sm font-semibold text-[#6B7280]">
-              Product screenshots are not available locally yet. The logo and official MQL5 page remain available for verification.
+              Product screenshots are not available locally yet. The logo and Myfxbook result link remain available for verification.
             </p>
           </div>
         </div>
@@ -189,13 +210,58 @@ function GalleryGrid({ product }) {
   return (
     <InfoCard title="Gallery">
       <div className="grid gap-3 sm:grid-cols-2">
-        {gallery.map((src) => (
-          <a key={src} href={src} target="_blank" rel="noreferrer" className="overflow-hidden rounded-xl border border-[#E7E4DA] bg-[#FBFAF7]">
+        {gallery.map((src, index) => (
+          <button key={src} type="button" onClick={() => setActiveIndex(index)} className="overflow-hidden rounded-xl border border-[#E7E4DA] bg-[#FBFAF7] text-left">
             <img src={src} alt={`${product.name} screenshot`} className="h-52 w-full object-cover transition-transform duration-300 hover:scale-105" loading="lazy" />
-          </a>
+          </button>
         ))}
       </div>
+      {activeIndex != null && (
+        <LightboxModal
+          images={gallery}
+          productName={product.name}
+          activeIndex={activeIndex}
+          setActiveIndex={setActiveIndex}
+          onClose={() => setActiveIndex(null)}
+        />
+      )}
     </InfoCard>
+  );
+}
+
+function LightboxModal({ images, productName, activeIndex, setActiveIndex, onClose }) {
+  useEffect(() => {
+    const onKey = (event) => {
+      if (event.key === "Escape") onClose();
+      if (event.key === "ArrowLeft") setActiveIndex((index) => (index - 1 + images.length) % images.length);
+      if (event.key === "ArrowRight") setActiveIndex((index) => (index + 1) % images.length);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [images.length, onClose, setActiveIndex]);
+
+  const previous = () => setActiveIndex((index) => (index - 1 + images.length) % images.length);
+  const next = () => setActiveIndex((index) => (index + 1) % images.length);
+
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/75 p-4 backdrop-blur-sm" onClick={onClose}>
+      <div className="relative w-full max-w-5xl" onClick={(event) => event.stopPropagation()}>
+        <button type="button" aria-label="Close gallery" onClick={onClose} className="absolute -top-12 right-0 grid h-10 w-10 place-items-center rounded-full bg-white text-[#111827]">
+          <X className="h-5 w-5" />
+        </button>
+        <button type="button" aria-label="Previous image" onClick={previous} className="absolute left-2 top-1/2 z-10 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-[#111827]">
+          <ChevronLeft className="h-6 w-6" />
+        </button>
+        <img src={images[activeIndex]} alt={`${productName} screenshot preview`} className="max-h-[78vh] w-full rounded-2xl object-contain shadow-2xl" />
+        <button type="button" aria-label="Next image" onClick={next} className="absolute right-2 top-1/2 z-10 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-[#111827]">
+          <ChevronRight className="h-6 w-6" />
+        </button>
+        <div className="mt-3 flex items-center justify-center gap-2 text-sm font-bold text-white">
+          {activeIndex + 1} / {images.length}
+          <ArrowRight className="h-4 w-4 opacity-70" />
+        </div>
+      </div>
+    </div>
   );
 }
 

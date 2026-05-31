@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
+import Home from "@/pages/Home";
 import Marketplace from "@/pages/Marketplace";
 import ProductDetail from "@/pages/ProductDetail";
 import Compare from "@/pages/Compare";
@@ -25,6 +26,7 @@ import ResetPassword from "@/pages/ResetPassword";
 import Admin from "@/pages/Admin";
 import NotFound from "@/pages/NotFound";
 import Dashboard from "@/pages/Dashboard";
+import Contact from "@/pages/Contact";
 
 import "@/App.css";
 
@@ -43,7 +45,6 @@ export default function App() {
 function AppRoutes() {
   const location = useLocation();
   const dashboardRoute =
-    location.pathname === "/" ||
     location.pathname === "/accounts" ||
     location.pathname.startsWith("/a/") ||
     location.pathname.startsWith("/live-results") ||
@@ -55,9 +56,10 @@ function AppRoutes() {
       {!dashboardRoute && <Header />}
       <main className={dashboardRoute ? "min-h-screen" : "min-h-[60vh]"}>
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={<Home />} />
           <Route path="/systems" element={<Marketplace />} />
           <Route path="/systems/:slug" element={<ProductDetail />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/live-results" element={<Dashboard />} />
           <Route path="/live-results/a/:slug" element={<Dashboard />} />
           <Route path="/compare" element={<Compare />} />

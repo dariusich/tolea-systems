@@ -25,18 +25,19 @@ export default function Header() {
         </Link>
 
         <nav className="hidden items-center gap-8 lg:flex">
+          <NavLink to="/" data-testid="nav-overview" className={navLink}>
+            Overview
+          </NavLink>
           <NavLink to="/systems" data-testid={TID.navMarketplace} className={navLink}>
-            Marketplace
+            Products
           </NavLink>
           <NavLink to="/live-results" data-testid={TID.navLiveResults} className={navLink}>
             Live Results
           </NavLink>
-          <NavLink to="/compare" data-testid={TID.navCompare} className={navLink}>
-            Compare
-          </NavLink>
-          <NavLink to="/blog" data-testid={TID.navBlog} className={navLink}>
-            Blog
-          </NavLink>
+          <NavLink to="/live-results#calendar" className={navLink}>Calendar</NavLink>
+          <NavLink to="/live-results#trades" className={navLink}>Trades</NavLink>
+          <NavLink to="/live-results#analytics" className={navLink}>Analytics</NavLink>
+          <NavLink to="/contact" className={navLink}>Contact</NavLink>
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
@@ -83,11 +84,11 @@ export default function Header() {
                 Sign in
               </Link>
               <Link
-                to="/signup"
+                to="/contact"
                 data-testid={TID.navGetStarted}
                 className="inline-flex items-center justify-center rounded-full bg-[color:var(--color-accent)] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[color:var(--color-accent-hover)]"
               >
-                Get started
+                Get access
               </Link>
             </>
           )}
@@ -106,10 +107,13 @@ export default function Header() {
       {open && (
         <div className="border-t border-slate-200 bg-white px-4 py-4 lg:hidden">
           <div className="flex flex-col gap-3">
-            <NavLink to="/systems" onClick={() => setOpen(false)} className={navLink}>Marketplace</NavLink>
+            <NavLink to="/" onClick={() => setOpen(false)} className={navLink}>Overview</NavLink>
+            <NavLink to="/systems" onClick={() => setOpen(false)} className={navLink}>Products</NavLink>
             <NavLink to="/live-results" onClick={() => setOpen(false)} className={navLink}>Live Results</NavLink>
-            <NavLink to="/compare" onClick={() => setOpen(false)} className={navLink}>Compare</NavLink>
-            <NavLink to="/blog" onClick={() => setOpen(false)} className={navLink}>Blog</NavLink>
+            <NavLink to="/live-results#calendar" onClick={() => setOpen(false)} className={navLink}>Calendar</NavLink>
+            <NavLink to="/live-results#trades" onClick={() => setOpen(false)} className={navLink}>Trades</NavLink>
+            <NavLink to="/live-results#analytics" onClick={() => setOpen(false)} className={navLink}>Analytics</NavLink>
+            <NavLink to="/contact" onClick={() => setOpen(false)} className={navLink}>Contact</NavLink>
             <NavLink to="/cart" onClick={() => setOpen(false)} className={navLink}>Cart ({count})</NavLink>
             {user ? (
               <>
@@ -120,7 +124,7 @@ export default function Header() {
             ) : (
               <>
                 <NavLink to="/login" onClick={() => setOpen(false)} className={navLink}>Sign in</NavLink>
-                <NavLink to="/signup" onClick={() => setOpen(false)} className={navLink}>Get started</NavLink>
+                <NavLink to="/contact" onClick={() => setOpen(false)} className={navLink}>Get access</NavLink>
               </>
             )}
           </div>
