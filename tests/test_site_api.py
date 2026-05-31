@@ -55,7 +55,11 @@ def test_site_products_featured_and_blog(tmp_path):
     featured = client.get("/api/products/featured").json()["products"]
     blog = client.get("/api/blog").json()["posts"]
 
-    assert any(product["slug"] == "dsys-beta" for product in products)
+    assert [product["slug"] for product in products] == [
+        "aurix-neural-edge-ai",
+        "matrader-ai",
+        "matrader-quickscalper",
+    ]
     assert all(product["featured"] for product in featured)
     assert any(post["slug"] == "why-live-results-matter" for post in blog)
 

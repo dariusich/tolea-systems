@@ -72,9 +72,9 @@ def _account_product_slug(account: dict[str, Any]) -> str:
     platform = str(account.get("platform") or "").upper()
     login = str(account.get("login") or "")
     if platform == "MT4" and login == "35115307":
-        return "dsys-beta"
+        return "matrader-quickscalper"
     if platform == "MT5" and login == "77045247":
-        return "dsys-alpha"
+        return "aurix-neural-edge-ai"
     return db.slugify(str(account.get("display_name") or account.get("name") or account.get("slug") or "system"))
 
 
@@ -273,7 +273,7 @@ def _make_order(payload: dict[str, Any], payment_method: str = "demo") -> dict[s
 def _get_order(order_id: str) -> dict[str, Any]:
     order = DEMO_ORDERS.get(order_id)
     if not order:
-        product = product_by_slug("dsys-beta") or all_products()[0]
+        product = product_by_slug("aurix-neural-edge-ai") or all_products()[0]
         order = _make_order(
             {
                 "items": [{"product_slug": product["slug"], "quantity": 1}],

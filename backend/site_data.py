@@ -25,129 +25,180 @@ CATEGORIES: list[dict[str, Any]] = [
 
 PRODUCTS: list[dict[str, Any]] = [
     {
-        "slug": "dsys-beta",
-        "name": "DSys Beta",
-        "category": "portfolio-systems",
-        "strategy_type": "Gold portfolio",
-        "tagline": "MT4 XAUUSD system with live account tracking and conservative sizing.",
+        "slug": "aurix-neural-edge-ai",
+        "name": "AURIX Neural Edge AI",
+        "category": "expert-advisors",
+        "strategy_type": "Gold grid EA",
+        "tagline": "MT4 gold Expert Advisor using trend bias, momentum confirmation, and adaptive recovery spacing.",
         "description": (
-            "DSys Beta is the public MT4 account currently connected to Tolea Systems. "
-            "The live results page reads directly from the synchronized trading journal, while this "
-            "marketplace page keeps product copy and checkout in demo-safe mode until licensing is wired."
+            "AURIX Neural Edge AI is an MT4 Expert Advisor for XAUUSD. It combines a higher-timeframe "
+            "trend bias with short-timeframe momentum confirmation, then manages recovery cycles with "
+            "fixed-lot grid logic and ATR-adaptive spacing. The product is designed for traders who want "
+            "structured gold automation with clear chart telemetry, not a black-box terminal."
         ),
         "features": [
-            "MT4-ready execution profile",
-            "Public Myfxbook verification link",
-            "Live journal integration",
-            "Risk-first position sizing notes",
-            "Installation checklist",
-            "Lifetime documentation updates",
+            "Higher-timeframe trend bias with M5 momentum confirmation",
+            "ATR-adaptive grid spacing for changing gold volatility",
+            "Fixed-lot recovery grid with group break-even and TP logic",
+            "Chart visuals for break-even, target, and next grid levels",
+            "PnL heatmap and equity sparkline concepts",
+            "Layered protection including equity caution and emergency stop concepts",
         ],
+        "recommended_setup": [
+            "Platform: MetaTrader 4",
+            "Symbol: XAUUSD",
+            "Timeframe: M1",
+            "Broker profile: RoboForex cent account conditions",
+            "Execution: low-latency VPS recommended",
+        ],
+        "risk_warning": (
+            "AURIX is grid-based. Recovery cycles can create meaningful floating drawdown, especially "
+            "during fast gold sessions or news events. Use risk capital only and monitor the account."
+        ),
         "symbols": ["XAUUSD"],
-        "timeframe": "M5-M15",
+        "timeframe": "M1",
         "platform": ["MT4"],
-        "min_deposit": 500,
-        "recommended_leverage": "1:100+",
+        "min_deposit": 150,
+        "recommended_leverage": "1:500+",
         "risk_level": "Moderate",
         "monthly_return": 2.95,
         "drawdown": 3.38,
         "win_rate": 64.7,
         "profit_factor": 1.78,
-        "rating": 4.9,
-        "review_count": 18,
-        "price": 349,
-        "compare_at_price": 499,
-        "featured": True,
-        "image": "https://images.unsplash.com/photo-1640340434855-6084b1f4901c?auto=format&fit=crop&w=1200&q=85",
-    },
-    {
-        "slug": "dsys-alpha",
-        "name": "DSys Alpha",
-        "category": "expert-advisors",
-        "strategy_type": "MT5 execution",
-        "tagline": "MT5 account-ready strategy shell prepared for live collector analytics.",
-        "description": (
-            "DSys Alpha is reserved for the MT5 account integration. When the VPS collector syncs "
-            "the logged-in MT5 terminal, the live results page will show the real account under this name."
-        ),
-        "features": [
-            "MT5 terminal connector support",
-            "Account-level PnL calendar",
-            "Equity and drawdown analytics",
-            "Trade table drilldown",
-            "VPS collector compatibility",
-            "Offline-safe journal storage",
-        ],
-        "symbols": ["XAUUSD", "EURUSD", "GBPUSD"],
-        "timeframe": "M5-H1",
-        "platform": ["MT5"],
-        "min_deposit": 1000,
-        "recommended_leverage": "1:100+",
-        "risk_level": "Moderate",
-        "monthly_return": 3.4,
-        "drawdown": 4.2,
-        "win_rate": 61.2,
-        "profit_factor": 1.62,
-        "rating": 4.8,
+        "rating": 4.33,
         "review_count": 11,
-        "price": 399,
-        "compare_at_price": 599,
+        "price": 0,
+        "compare_at_price": None,
         "featured": True,
-        "image": "https://images.unsplash.com/photo-1621761191319-c6fb62004040?auto=format&fit=crop&w=1200&q=85",
+        "mql5_url": "https://www.mql5.com/en/market/product/174228",
+        "myfxbook_url": "https://www.myfxbook.com/portfolio/matrader-ai/12049485",
+        "myfxbook_widget_url": "https://widget.myfxbook.com/widget/widget.png?accountOid=12049485&type=6",
+        "logo": "/assets/products/aurix/aurix-neural-edge-logo-200x200-6931.png",
+        "image": "/assets/products/aurix/aurix-neural-edge-screen-2217-preview.jpg",
+        "gallery": [
+            "/assets/products/aurix/aurix-neural-edge-screen-2023.png",
+            "/assets/products/aurix/aurix-neural-edge-screen-2217-preview.jpg",
+            "/assets/products/aurix/aurix-neural-edge-screen-2595.png",
+            "/assets/products/aurix/aurix-neural-edge-screen-3946.png",
+        ],
     },
     {
-        "slug": "tolea-portfolio-monitor",
-        "name": "Tolea Portfolio Monitor",
-        "category": "indicators",
-        "strategy_type": "Analytics",
-        "tagline": "A dashboard companion for risk, open exposure, and closed-trade reporting.",
+        "slug": "matrader-ai",
+        "name": "MATrader AI",
+        "category": "expert-advisors",
+        "strategy_type": "XAUUSD AI EA",
+        "tagline": "MT4 Expert Advisor for XAUUSD M1 with adaptive cycle logic and equity protection controls.",
         "description": (
-            "A visual analytics layer for traders who want a compact risk console around their "
-            "MetaTrader workflow. This product page is static for now; it is included to preserve "
-            "the full marketplace surface while the real product catalog is prepared."
+            "MATrader AI is an MT4 Expert Advisor focused on XAUUSD M1. It uses adaptive cycle/grid "
+            "logic, neural-style entry filtering, flexible lot handling, and account-level protection "
+            "tools. The setup is mainly intended for RoboForex cent account conditions where small lot "
+            "granularity and execution costs match the strategy profile."
         ),
         "features": [
-            "Closed-trade journal view",
-            "Daily PnL heatmap",
-            "Symbol-level performance cards",
-            "Export-ready reporting layout",
-            "MT4 and MT5 account grouping",
-            "Local-first data model",
+            "Optimized for XAUUSD M1 standard settings",
+            "Adaptive cycle and grid management options",
+            "Neural-style entry timing and configurable trade filters",
+            "Lot flexibility with fixed or balance-scaled sizing",
+            "News, time, and day filters for volatile sessions",
+            "Profit protection through break-even, trailing, and equity controls",
         ],
-        "symbols": ["All"],
-        "timeframe": "All",
-        "platform": ["MT4", "MT5"],
-        "min_deposit": 0,
-        "recommended_leverage": "Any",
-        "risk_level": "Low",
-        "monthly_return": 0,
-        "drawdown": 0,
-        "win_rate": 0,
-        "profit_factor": 0,
-        "rating": 4.7,
-        "review_count": 7,
-        "price": 149,
-        "compare_at_price": 249,
+        "recommended_setup": [
+            "Platform: MetaTrader 4",
+            "Symbol: XAUUSD",
+            "Timeframe: M1",
+            "Broker profile: RoboForex cent account with small lot granularity",
+            "Execution: VPS recommended for stable trade handling",
+        ],
+        "risk_warning": (
+            "MATrader AI can use grid and recovery logic. Wrong broker conditions, oversized lots, or "
+            "high-impact news can materially change risk and drawdown."
+        ),
+        "symbols": ["XAUUSD"],
+        "timeframe": "M1",
+        "platform": ["MT4"],
+        "min_deposit": 200,
+        "recommended_leverage": "1:2000",
+        "risk_level": "Moderate",
+        "monthly_return": 2.4,
+        "drawdown": 4.8,
+        "win_rate": 71.3,
+        "profit_factor": 1.62,
+        "rating": 4.63,
+        "review_count": 146,
+        "price": 0,
+        "compare_at_price": None,
         "featured": True,
-        "image": "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1200&q=85",
+        "mql5_url": "https://www.mql5.com/en/market/product/147979",
+        "myfxbook_url": "https://www.myfxbook.com/portfolio/matrader/12039419",
+        "myfxbook_widget_url": "https://widget.myfxbook.com/widget/widget.png?accountOid=12039419&type=6",
+        "logo": "/assets/products/matrader-ai/matraderea-logo-200x200-5739.png",
+        "image": "/assets/products/matrader-ai/matraderea-logo-200x200-5739.png",
+        "gallery": [],
+    },
+    {
+        "slug": "matrader-quickscalper",
+        "name": "MATrader QuickScalper",
+        "category": "expert-advisors",
+        "strategy_type": "Scalping EA",
+        "tagline": "A separate MT4 scalping strategy built for short trade cycles and disciplined execution.",
+        "description": (
+            "MATrader QuickScalper is a separate MT4 Expert Advisor in the MATrader ecosystem. It is "
+            "focused on short trade cycles, fast execution, strict trade handling, and cent-account lot "
+            "granularity. It is designed as a focused scalping system rather than a simplified version "
+            "of MATrader AI."
+        ),
+        "features": [
+            "Dedicated scalping engine with short trade duration focus",
+            "Strict execution discipline and controlled trade frequency",
+            "Money management with fixed or balance-based lot handling",
+            "Equity stop and deeper-cycle protection controls",
+            "Primary HiLo trailing plus optional advanced trailing modules",
+            "News filter, Friday close logic, and Monday delayed start logic",
+        ],
+        "recommended_setup": [
+            "Platform: MetaTrader 4",
+            "Symbol/timeframe: use the product input recommendations",
+            "Broker profile: RoboForex cent account with 0.0001 lot capability",
+            "Execution: low spread and stable VPS conditions",
+        ],
+        "risk_warning": (
+            "Scalping is sensitive to spread, execution quality, broker feed, and latency. Results can "
+            "change quickly when costs or fills differ from the optimized environment."
+        ),
+        "symbols": ["XAUUSD"],
+        "timeframe": "Scalping setup",
+        "platform": ["MT4"],
+        "min_deposit": 200,
+        "recommended_leverage": "1:500+",
+        "risk_level": "Moderate",
+        "monthly_return": 2.95,
+        "drawdown": 3.38,
+        "win_rate": 64.7,
+        "profit_factor": 1.78,
+        "rating": 4.6,
+        "review_count": 1,
+        "price": 10999,
+        "compare_at_price": None,
+        "featured": True,
+        "mql5_url": "https://www.mql5.com/en/market/product/158178",
+        "myfxbook_url": "https://www.myfxbook.com/portfolio/dsys-beta/12049164",
+        "myfxbook_widget_url": "https://widget.myfxbook.com/widget/widget.png?accountOid=12049164&type=6",
+        "logo": "/assets/products/quickscalper/matrader-quickscalper-logo-200x200-4159.png",
+        "image": "/assets/products/quickscalper/matrader-quickscalper-screen-4323-preview.jpg",
+        "gallery": [
+            "/assets/products/quickscalper/matrader-quickscalper-screen-2320.png",
+            "/assets/products/quickscalper/matrader-quickscalper-screen-4323-preview.jpg",
+            "/assets/products/quickscalper/matrader-quickscalper-screen-5743.png",
+            "/assets/products/quickscalper/matrader-quickscalper-screen-7093-preview.jpg",
+        ],
     },
 ]
 
 
 REVIEWS: dict[str, list[dict[str, Any]]] = {
-    "dsys-beta": [
-        {
-            "id": "review-beta-1",
-            "author": "Verified Trader",
-            "rating": 5,
-            "title": "Clean reporting and risk discipline",
-            "body": "The important part is transparency: live reporting, clear trade history, and no screenshot-only performance claims.",
-            "verified_purchase": True,
-            "created_at": "2026-05-18T12:00:00+00:00",
-        }
-    ],
-    "dsys-alpha": [],
-    "tolea-portfolio-monitor": [],
+    "aurix-neural-edge-ai": [],
+    "matrader-ai": [],
+    "matrader-quickscalper": [],
 }
 
 

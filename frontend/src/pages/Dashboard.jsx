@@ -7,25 +7,28 @@ import {
   FileText,
   Home,
   LineChart,
+  PackageOpen,
   RefreshCw,
   Server,
   Settings,
   ShieldCheck,
-  WalletCards
+  WalletCards,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { tradeApi } from "../api.js";
 import CalendarPnL from "../components/CalendarPnL.jsx";
 import EquityCurve from "../components/EquityCurve.jsx";
 import StatsPanel from "../components/StatsPanel.jsx";
 import TradesTable from "../components/TradesTable.jsx";
 
+const RISK_DISCLAIMER = "Trading involves risk. Past performance does not guarantee future results.";
+
 function money(value, currency) {
   return new Intl.NumberFormat(undefined, {
     style: "currency",
     currency: currency || "USD",
-    maximumFractionDigits: 2
+    maximumFractionDigits: 2,
   }).format(Number(value || 0));
 }
 
@@ -34,7 +37,7 @@ function compactMoney(value, currency) {
     style: "currency",
     currency: currency || "USD",
     notation: "compact",
-    maximumFractionDigits: 1
+    maximumFractionDigits: 1,
   }).format(Number(value || 0));
 }
 
@@ -57,21 +60,12 @@ function accountLabel(account) {
   return `${display} - ${account.platform} ${account.login}`;
 }
 
-function hasMyfxbookWidget(account) {
-  return account?.platform === "MT4" && String(account?.login) === "35115307";
-}
-
-const MYFXBOOK_WIDGET = {
-  name: "DSys Beta",
-  accountOid: "12049164",
-  profileUrl: "https://www.myfxbook.com/members/dariusch/dsys-beta/12049164",
-  imageUrl: "https://widget.myfxbook.com/widget/widget.png?accountOid=12049164&type=6"
-};
-
 export default function Dashboard() {
   const { token, slug } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const [accounts, setAccounts] = useState([]);
+  const [selectedSlug, setSelectedSlug] = useState(null);
   const [account, setAccount] = useState(null);
   const [stats, setStats] = useState(null);
   const [days, setDays] = useState([]);
@@ -79,55 +73,50 @@ export default function Dashboard() {
   const [equity, setEquity] = useState([]);
   const [trades, setTrades] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loadingAccounts, setLoadingAccounts] = useState(true);
+  const [loadingAccount, setLoadingAccount] = useState(false);
   const [error, setError] = useState("");
   const [lastRefresh, setLastRefresh] = useState(null);
 
-  const accountPath = useCallback((accountSlug) => (token ? `/share/${token}/a/${accountSlug}` : `/live-results/a/${accountSlug}`), [token]);
-  const accountsPath = token ? `/share/${token}` : "/live-results";
+  const isShareHub = Boolean(token && !slug && location.pathname.startsWith("/share"));
+  const isAccountsHub = location.pathname === "/accounts" || isShareHub;
+  const activeSlug = slug || selectedSlug;
 
-  const load = useCallback(async () => {
-    setError("");
+  const accountPath = useCallback(
+    (accountSlug) => {
+      if (token) return `/share/${token}/a/${accountSlug}`;
+      if (location.pathname.startsWith("/live-results")) return `/live-results/a/${accountSlug}`;
+      return `/a/${accountSlug}`;
+    },
+    [location.pathname, token]
+  );
+
+  const loadAccounts = useCallback(async () => {
     const accountsData = await tradeApi.accounts(token);
     const nextAccounts = accountsData.accounts || [];
     setAccounts(nextAccounts);
-
-    if (!slug) {
-      setAccount(null);
-      setStats(null);
-      setDays([]);
-      setTradesByDay({});
-      setEquity([]);
-      setTrades([]);
-    } else {
-      const [accountData, statsData, dailyData, equityData, tradesData] = await Promise.all([
-        tradeApi.account(token, slug),
-        tradeApi.stats(token, slug),
-        tradeApi.dailyPnl(token, slug),
-        tradeApi.equity(token, slug),
-        tradeApi.trades(token, slug)
-      ]);
-      setAccount(accountData.account);
-      setStats(statsData.stats);
-      setDays(dailyData.days || []);
-      setTradesByDay(dailyData.tradesByDay || {});
-      setEquity(equityData.equity || []);
-      setTrades(tradesData.trades || []);
-    }
-
     setLastRefresh(new Date());
-    setLoading(false);
-  }, [slug, token]);
+    setSelectedSlug((current) => {
+      if (slug) return slug;
+      if (isAccountsHub) return null;
+      if (current && nextAccounts.some((item) => item.slug === current)) return current;
+      return nextAccounts[0]?.slug || null;
+    });
+  }, [isAccountsHub, slug, token]);
 
   useEffect(() => {
     let active = true;
     const safeLoad = async () => {
       try {
-        await load();
+        await loadAccounts();
+        if (active) {
+          setError("");
+          setLoadingAccounts(false);
+        }
       } catch (exc) {
         if (active) {
           setError(exc.message);
-          setLoading(false);
+          setLoadingAccounts(false);
         }
       }
     };
@@ -137,7 +126,52 @@ export default function Dashboard() {
       active = false;
       clearInterval(interval);
     };
-  }, [load]);
+  }, [loadAccounts]);
+
+  useEffect(() => {
+    if (!activeSlug || isAccountsHub) {
+      setAccount(null);
+      setStats(null);
+      setDays([]);
+      setTradesByDay({});
+      setEquity([]);
+      setTrades([]);
+      return;
+    }
+
+    let active = true;
+    const safeLoad = async () => {
+      setLoadingAccount(true);
+      try {
+        const [accountData, statsData, dailyData, equityData, tradesData] = await Promise.all([
+          tradeApi.account(token, activeSlug),
+          tradeApi.stats(token, activeSlug),
+          tradeApi.dailyPnl(token, activeSlug),
+          tradeApi.equity(token, activeSlug),
+          tradeApi.trades(token, activeSlug),
+        ]);
+        if (!active) return;
+        setAccount(accountData.account);
+        setStats(statsData.stats);
+        setDays(dailyData.days || []);
+        setTradesByDay(dailyData.tradesByDay || {});
+        setEquity(equityData.equity || []);
+        setTrades(tradesData.trades || []);
+        setError("");
+        setLastRefresh(new Date());
+      } catch (exc) {
+        if (active) setError(exc.message);
+      } finally {
+        if (active) setLoadingAccount(false);
+      }
+    };
+    void safeLoad();
+    const interval = setInterval(safeLoad, 5000);
+    return () => {
+      active = false;
+      clearInterval(interval);
+    };
+  }, [activeSlug, isAccountsHub, token]);
 
   const accountCurrency = account?.currency || "USD";
   const selectedTrades = useMemo(() => {
@@ -145,81 +179,102 @@ export default function Dashboard() {
     return trades.filter((trade) => trade.close_time?.slice(0, 10) === selectedDate);
   }, [selectedDate, trades]);
   const dayProfit = selectedTrades.reduce((sum, trade) => sum + net(trade), 0);
-  const recentTrades = useMemo(() => [...trades].slice(0, 6), [trades]);
+  const recentTrades = useMemo(() => (selectedDate ? selectedTrades : trades.slice(0, 8)), [selectedDate, selectedTrades, trades]);
   const symbolPerformance = useMemo(() => groupBySymbol(trades), [trades]);
 
-  useEffect(() => {
-    if (!loading && !slug && accounts.length === 1) {
-      navigate(accountPath(accounts[0].slug), { replace: true });
-    }
-  }, [accountPath, accounts, loading, navigate, slug]);
+  const handleAccountChange = (nextSlug) => {
+    setSelectedSlug(nextSlug);
+    navigate(accountPath(nextSlug));
+  };
 
-  if (loading) {
+  if (loadingAccounts) {
     return (
-      <Shell lastRefresh={lastRefresh}>
+      <Shell lastRefresh={lastRefresh} accounts={accounts} account={account} onAccountChange={handleAccountChange}>
         <div className="loading-block">Loading Tolea Systems...</div>
       </Shell>
     );
   }
 
-  if (error) {
+  if (error && !account) {
     return (
-      <Shell lastRefresh={lastRefresh}>
+      <Shell lastRefresh={lastRefresh} accounts={accounts} account={account} onAccountChange={handleAccountChange}>
         <div className="error-panel">{error}</div>
       </Shell>
     );
   }
 
-  if (!slug) {
+  if (isAccountsHub) {
     return (
-      <Shell lastRefresh={lastRefresh}>
+      <Shell lastRefresh={lastRefresh} accounts={accounts} account={account} onAccountChange={handleAccountChange}>
         <AccountOverview accounts={accounts} token={token} />
       </Shell>
     );
   }
 
+  if (!accounts.length) {
+    return (
+      <Shell lastRefresh={lastRefresh} accounts={accounts} account={account} onAccountChange={handleAccountChange}>
+        <section className="empty-state">
+          <Server size={34} />
+          <h1>No accounts synced yet.</h1>
+          <p>The dashboard will populate as soon as the VPS collector sends real MT4 or MT5 data.</p>
+        </section>
+      </Shell>
+    );
+  }
+
   return (
-    <Shell lastRefresh={lastRefresh} accounts={accounts} account={account} onAccountChange={(nextSlug) => navigate(accountPath(nextSlug))}>
+    <Shell lastRefresh={lastRefresh} accounts={accounts} account={account} onAccountChange={handleAccountChange}>
       <div className="dashboard-title">
         <div>
           <h1>Overview</h1>
           <p>Your trading performance at a glance</p>
         </div>
-        <Link className="soft-link" to={accountsPath}>All accounts</Link>
+        <Link className="soft-link" to="/accounts">All accounts</Link>
       </div>
 
-      <StatsPanel stats={stats} account={account} />
+      {loadingAccount && !account ? (
+        <div className="loading-block">Loading account performance...</div>
+      ) : (
+        <>
+          <StatsPanel stats={stats} account={account} />
 
-      <div className="dashboard-grid">
-        <EquityCurve data={equity} currency={accountCurrency} />
-        <CalendarPnL
-          days={days}
-          tradesByDay={tradesByDay}
-          currency={accountCurrency}
-          selectedDate={selectedDate}
-          onSelectDate={setSelectedDate}
-        />
-      </div>
+          <div className="dashboard-grid">
+            <EquityCurve data={equity} currency={accountCurrency} />
+            <CalendarPnL
+              days={days}
+              tradesByDay={tradesByDay}
+              currency={accountCurrency}
+              selectedDate={selectedDate}
+              onSelectDate={setSelectedDate}
+            />
+          </div>
 
-      <div className="bottom-grid">
-        <div className="side-stack">
-          <section className="day-drilldown">
-            <div>
-              <span className="eyebrow">{selectedDate || "All closed trades"}</span>
-              <h2 className={dayProfit >= 0 ? "positive" : "negative"}>{money(dayProfit, accountCurrency)}</h2>
+          <div className="bottom-grid">
+            <div className="side-stack">
+              <section className="day-drilldown">
+                <div>
+                  <span className="eyebrow">{selectedDate || "All closed trades"}</span>
+                  <h2 className={dayProfit >= 0 ? "positive" : "negative"}>{money(dayProfit, accountCurrency)}</h2>
+                </div>
+                {selectedDate && <button type="button" onClick={() => setSelectedDate(null)}>Clear day</button>}
+              </section>
+              <TradesTable
+                trades={recentTrades}
+                currency={accountCurrency}
+                title={selectedDate ? `Trades on ${selectedDate}` : "Recent Trades"}
+                totalCount={selectedDate ? selectedTrades.length : trades.length}
+                limit={8}
+              />
             </div>
-            {selectedDate && <button type="button" onClick={() => setSelectedDate(null)}>Clear day</button>}
-          </section>
-          <TradesTable
-            trades={selectedDate ? selectedTrades : recentTrades}
-            currency={accountCurrency}
-            title={selectedDate ? `Trades on ${selectedDate}` : "Recent Trades"}
-          />
-        </div>
-        <div className="side-stack">
-          <SymbolPerformance symbols={symbolPerformance} currency={accountCurrency} />
-        </div>
-      </div>
+            <div className="side-stack">
+              <SymbolPerformance symbols={symbolPerformance} currency={accountCurrency} />
+            </div>
+          </div>
+
+          <p className="risk-disclaimer">{RISK_DISCLAIMER}</p>
+        </>
+      )}
     </Shell>
   );
 }
@@ -228,7 +283,7 @@ function Shell({ children, lastRefresh, accounts = [], account = null, onAccount
   return (
     <div className="dashboard-shell">
       <aside className="sidebar">
-        <Link className="sidebar-brand" to="/live-results">
+        <Link className="sidebar-brand" to="/">
           <span className="logo-pulse"><Activity size={24} /></span>
           <span>
             <strong>Tolea Systems</strong>
@@ -236,14 +291,14 @@ function Shell({ children, lastRefresh, accounts = [], account = null, onAccount
           </span>
         </Link>
         <nav className="sidebar-nav" aria-label="Main navigation">
-          <NavItem active icon={Home} label="Overview" />
-          <NavItem icon={CalendarDays} label="Calendar" />
-          <NavItem icon={LineChart} label="Trades" />
-          <NavItem icon={BarChart3} label="Analytics" />
-          <NavItem icon={ShieldCheck} label="Myfxbook" />
-          <NavItem icon={FileText} label="Reports" />
-          <NavItem icon={WalletCards} label="Accounts" />
-          <NavItem icon={Settings} label="Settings" />
+          <NavItem to="/" icon={Home} label="Overview" />
+          <NavItem to="/live-results" icon={Activity} label="Live Results" />
+          <NavItem to="/systems" icon={PackageOpen} label="Products" />
+          <NavItem to="/live-results" icon={CalendarDays} label="Calendar" />
+          <NavItem to="/live-results" icon={LineChart} label="Trades" />
+          <NavItem to="/live-results" icon={BarChart3} label="Analytics" />
+          <NavItem to="/accounts" icon={WalletCards} label="Accounts" />
+          <NavItem to="/account" icon={Settings} label="Settings" />
         </nav>
       </aside>
 
@@ -262,7 +317,7 @@ function Shell({ children, lastRefresh, accounts = [], account = null, onAccount
             )}
             <div className="refresh-status">
               <span className="status-dot" />
-              <span>{accounts.length || account ? `${accounts.length || 1} connected` : "Waiting"}</span>
+              <span>{accounts.length ? `${accounts.length} connected` : "Waiting"}</span>
             </div>
             <button className="icon-button" type="button" title={lastRefresh ? `Updated ${lastRefresh.toLocaleTimeString()}` : "Waiting for data"}>
               <RefreshCw size={16} />
@@ -278,12 +333,14 @@ function Shell({ children, lastRefresh, accounts = [], account = null, onAccount
   );
 }
 
-function NavItem({ icon: Icon, label, active = false }) {
+function NavItem({ to, icon: Icon, label }) {
+  const location = useLocation();
+  const active = to === "/" ? ["/", "/a"].some((path) => location.pathname === path || location.pathname.startsWith(`${path}/`)) : location.pathname.startsWith(to);
   return (
-    <span className={`nav-item ${active ? "active" : ""}`}>
+    <Link to={to} className={`nav-item ${active ? "active" : ""}`}>
       <Icon size={17} />
       {label}
-    </span>
+    </Link>
   );
 }
 
@@ -309,49 +366,27 @@ function AccountOverview({ accounts, token }) {
         </div>
       </div>
       <div className="account-grid">
-        {accounts.map((account) => (
-          <div className="account-block" key={account.account_id}>
-            <button className="account-card" type="button" onClick={() => navigate(token ? `/share/${token}/a/${account.slug}` : `/live-results/a/${account.slug}`)}>
-              <span className="account-platform">{account.platform}</span>
-              <ExternalLink size={18} />
-              <div>
-                <h2>{account.display_name || account.name}</h2>
-                <p>{account.broker || "Broker unavailable"} / {account.server || "Server unavailable"}</p>
-              </div>
-              <div className="account-card-metrics">
-                <span>Balance <strong>{money(account.balance, account.currency)}</strong></span>
-                <span>Equity <strong>{money(account.equity, account.currency)}</strong></span>
-                <span>Floating <strong className={Number(account.floating_pl || 0) >= 0 ? "positive" : "negative"}>{money(account.floating_pl, account.currency)}</strong></span>
-              </div>
-              <small>Last sync {relativeTime(account.last_sync_at)}</small>
-            </button>
-            {hasMyfxbookWidget(account) && <MyfxbookPanel widget={MYFXBOOK_WIDGET} account={account} compact />}
-          </div>
+        {accounts.map((item) => (
+          <button
+            className="account-card"
+            key={item.account_id}
+            type="button"
+            onClick={() => navigate(token ? `/share/${token}/a/${item.slug}` : `/a/${item.slug}`)}
+          >
+            <span className="account-platform">{item.platform}</span>
+            <ExternalLink size={18} />
+            <div>
+              <h2>{item.display_name || item.name}</h2>
+              <p>{item.broker || "Broker unavailable"} / {item.server || "Server unavailable"}</p>
+            </div>
+            <div className="account-card-metrics">
+              <span>Balance <strong>{money(item.balance, item.currency)}</strong></span>
+              <span>Equity <strong>{money(item.equity, item.currency)}</strong></span>
+              <span>Floating <strong className={Number(item.floating_pl || 0) >= 0 ? "positive" : "negative"}>{money(item.floating_pl, item.currency)}</strong></span>
+            </div>
+            <small>Last sync {relativeTime(item.last_sync_at)}</small>
+          </button>
         ))}
-      </div>
-    </section>
-  );
-}
-
-function MyfxbookPanel({ widget, account, compact = false }) {
-  return (
-    <section className={`myfxbook-panel ${compact ? "myfxbook-panel-compact" : ""}`}>
-      <div className="section-heading">
-        <h2>Myfxbook Verification</h2>
-        <a className="mini-link" href={widget.profileUrl} target="_blank" rel="noreferrer">Open Myfxbook</a>
-      </div>
-      <div className="myfxbook-widget">
-        <div className="myfxbook-top">
-          <strong>my<span>fx</span>book</strong>
-          <small>{widget.name}</small>
-        </div>
-        <a href={widget.profileUrl} target="_blank" rel="noreferrer">
-          <img src={widget.imageUrl} alt={`${widget.name} Myfxbook widget`} loading="lazy" />
-        </a>
-      </div>
-      <div className="myfxbook-meta">
-        <span><ShieldCheck size={15} /> External verification</span>
-        <small>{account?.broker || "Broker"} / {account?.login || "account"}</small>
       </div>
     </section>
   );
