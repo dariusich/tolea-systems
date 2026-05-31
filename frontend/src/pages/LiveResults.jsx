@@ -133,7 +133,7 @@ export default function LiveResults() {
                   </div>
                   <Link
                     to={`/systems/${activeAccount.system_name?.toLowerCase().replace(/\s+/g, "-")}`}
-                    className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700"
+                    className="inline-flex items-center gap-1 text-sm text-[color:var(--color-accent)] hover:text-[color:var(--color-accent-hover)]"
                   >
                     View system <ArrowRight className="h-3 w-3" />
                   </Link>

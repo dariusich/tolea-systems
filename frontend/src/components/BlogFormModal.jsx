@@ -149,7 +149,7 @@ export default function BlogFormModal({ open, onClose, onSaved, editing }) {
 }
 
 const inp =
-  "h-9 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:bg-zinc-100 disabled:text-zinc-500";
+  "h-9 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-[color:var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[rgba(200,155,90,0.20)] disabled:bg-zinc-100 disabled:text-zinc-500";
 
 function Field({ label, children, full }) {
   return (

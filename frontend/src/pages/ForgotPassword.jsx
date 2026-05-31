@@ -50,7 +50,7 @@ export default function ForgotPassword() {
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 data-testid="forgot-email"
-                className="mt-1 h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                className="mt-1 h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-[color:var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[rgba(200,155,90,0.20)]"
               />
             </label>
 
@@ -69,7 +69,7 @@ export default function ForgotPassword() {
 
         <p className="mt-6 text-center text-sm text-zinc-500">
           Remembered it?{" "}
-          <Link to="/login" className="font-medium text-blue-600 hover:text-blue-700">Sign in</Link>
+          <Link to="/login" className="font-medium text-[color:var(--color-accent)] hover:text-[color:var(--color-accent-hover)]">Sign in</Link>
         </p>
       </section>
     </>

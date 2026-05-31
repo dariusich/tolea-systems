@@ -79,7 +79,7 @@ export default function Login() {
 
         <p className="mt-6 text-center text-sm text-zinc-500">
           New to Tolea?{" "}
-          <Link to="/signup" className="font-medium text-blue-600 hover:text-blue-700">Create an account</Link>
+          <Link to="/signup" className="font-medium text-[color:var(--color-accent)] hover:text-[color:var(--color-accent-hover)]">Create an account</Link>
         </p>
       </section>
     </>
@@ -87,7 +87,7 @@ export default function Login() {
 }
 
 const inputCls =
-  "h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20";
+  "h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-[color:var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[rgba(200,155,90,0.20)]";
 
 function Field({ label, children }) {
   return (

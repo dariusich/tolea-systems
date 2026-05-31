@@ -37,8 +37,8 @@ export default function Blog() {
             data-testid={`blog-hero-${hero.slug}`}
           >
             <div>
-              <p className="text-xs font-medium uppercase tracking-[0.16em] text-blue-600">{hero.category}</p>
-              <h2 className="font-display mt-3 text-3xl leading-tight tracking-tight text-zinc-900 transition-colors group-hover:text-blue-700 sm:text-4xl">
+              <p className="text-xs font-medium uppercase tracking-[0.16em] text-[color:var(--color-accent)]">{hero.category}</p>
+              <h2 className="font-display mt-3 text-3xl leading-tight tracking-tight text-zinc-900 transition-colors group-hover:text-[color:var(--color-accent-hover)] sm:text-4xl">
                 {hero.title}
               </h2>
               <p className="mt-4 max-w-2xl text-base leading-relaxed text-zinc-600">{hero.excerpt}</p>
@@ -60,8 +60,8 @@ export default function Blog() {
               <div className="aspect-[16/10] overflow-hidden rounded-2xl bg-zinc-100">
                 <img src={p.cover} alt="" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
               </div>
-              <p className="mt-4 text-xs font-medium uppercase tracking-[0.16em] text-blue-600">{p.category}</p>
-              <h3 className="mt-2 text-lg font-semibold tracking-tight text-zinc-900 transition-colors group-hover:text-blue-700">
+              <p className="mt-4 text-xs font-medium uppercase tracking-[0.16em] text-[color:var(--color-accent)]">{p.category}</p>
+              <h3 className="mt-2 text-lg font-semibold tracking-tight text-zinc-900 transition-colors group-hover:text-[color:var(--color-accent-hover)]">
                 {p.title}
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-zinc-600">{p.excerpt}</p>

@@ -30,7 +30,7 @@ export default function BlogPost() {
       </div>
 
       <article className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
-        <p className="text-xs font-medium uppercase tracking-[0.18em] text-blue-600">{post.category}</p>
+        <p className="text-xs font-medium uppercase tracking-[0.18em] text-[color:var(--color-accent)]">{post.category}</p>
         <h1 className="font-display mt-3 text-4xl leading-tight tracking-tight text-zinc-900 sm:text-5xl">
           {post.title}
         </h1>
@@ -51,7 +51,7 @@ export default function BlogPost() {
         </div>
 
         <hr className="my-12 border-zinc-100" />
-        <Link to="/blog" className="text-sm text-blue-600 hover:text-blue-700">← All posts</Link>
+        <Link to="/blog" className="text-sm text-[color:var(--color-accent)] hover:text-[color:var(--color-accent-hover)]">← All posts</Link>
       </article>
     </>
   );

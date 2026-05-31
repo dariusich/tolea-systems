@@ -22,7 +22,7 @@ export default function Invoice() {
       <section className="mx-auto max-w-2xl px-6 py-20 text-center">
         <h1 className="font-display text-3xl tracking-tight text-zinc-900">Invoice unavailable</h1>
         <p className="mt-3 text-sm text-zinc-600">{error}</p>
-        <Link to="/account" className="mt-6 inline-block text-sm text-blue-600 hover:text-blue-700">Back to orders</Link>
+        <Link to="/account" className="mt-6 inline-block text-sm text-[color:var(--color-accent)] hover:text-[color:var(--color-accent-hover)]">Back to orders</Link>
       </section>
     );
   }

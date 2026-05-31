@@ -81,7 +81,7 @@ export default function Marketplace() {
                   onChange={(e) => update("q", e.target.value)}
                   placeholder="Search systems…"
                   data-testid={TID.marketplaceSearch}
-                  className="h-10 w-full rounded-lg border border-zinc-200 bg-white pl-9 pr-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  className="h-10 w-full rounded-lg border border-zinc-200 bg-white pl-9 pr-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-[color:var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[rgba(200,155,90,0.20)]"
                 />
               </div>
             </div>
@@ -125,7 +125,7 @@ export default function Marketplace() {
                   value={sort}
                   onChange={(e) => update("sort", e.target.value)}
                   data-testid={TID.marketplaceSort}
-                  className="h-9 rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  className="h-9 rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-700 focus:outline-none focus:ring-2 focus:ring-[rgba(200,155,90,0.20)]"
                 >
                   {SORTS.map((s) => (
                     <option key={s.value} value={s.value}>{s.label}</option>
@@ -170,11 +170,11 @@ function FilterOption({ active, onClick, label, testId }) {
       onClick={onClick}
       data-testid={testId}
       className={`flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-sm transition-colors ${
-        active ? "bg-blue-50 text-blue-700" : "text-zinc-700 hover:bg-zinc-50"
+        active ? "bg-[color:var(--color-accent-light)] text-[color:var(--color-accent-hover)]" : "text-zinc-700 hover:bg-zinc-50"
       }`}
     >
       <span>{label}</span>
-      {active && <span className="h-1.5 w-1.5 rounded-full bg-blue-600" />}
+      {active && <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--color-accent)]" />}
     </button>
   );
 }

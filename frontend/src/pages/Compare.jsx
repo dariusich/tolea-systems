@@ -53,7 +53,7 @@ export default function Compare() {
                 </th>
                 {tradeable.map((p) => (
                   <th key={p.slug} className="px-5 py-5 text-left align-top">
-                    <Link to={`/systems/${p.slug}`} className="text-sm font-semibold text-zinc-900 hover:text-blue-600">
+                    <Link to={`/systems/${p.slug}`} className="text-sm font-semibold text-zinc-900 hover:text-[color:var(--color-accent-hover)]">
                       {p.name}
                     </Link>
                     <p className="mt-1 max-w-[16ch] text-xs text-zinc-500">{p.strategy_type}</p>

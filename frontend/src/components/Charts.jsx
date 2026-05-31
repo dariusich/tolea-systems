@@ -37,8 +37,8 @@ export function EquityChart({ data, height = 280, showBalance = true }) {
       <AreaChart data={data} margin={{ top: 10, right: 8, left: 0, bottom: 0 }}>
         <defs>
           <linearGradient id="equityGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#2563EB" stopOpacity={0.22} />
-            <stop offset="100%" stopColor="#2563EB" stopOpacity={0} />
+            <stop offset="0%" stopColor="#C89B5A" stopOpacity={0.22} />
+            <stop offset="100%" stopColor="#C89B5A" stopOpacity={0} />
           </linearGradient>
         </defs>
         <CartesianGrid stroke="#F4F4F5" vertical={false} />
@@ -67,7 +67,7 @@ export function EquityChart({ data, height = 280, showBalance = true }) {
           type="monotone"
           dataKey="balance"
           name="Balance"
-          stroke="#2563EB"
+          stroke="#C89B5A"
           strokeWidth={2}
           fill="url(#equityGrad)"
         />
@@ -124,7 +124,7 @@ export function DrawdownChart({ data, height = 200 }) {
   );
 }
 
-export function MiniSpark({ data, color = "#2563EB", height = 48 }) {
+export function MiniSpark({ data, color = "#C89B5A", height = 48 }) {
   return (
     <ResponsiveContainer width="100%" height={height}>
       <LineChart data={data}>

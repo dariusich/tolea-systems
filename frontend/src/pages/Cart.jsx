@@ -36,7 +36,7 @@ export default function Cart() {
                     {it.image && <img src={it.image} alt={it.name} className="h-full w-full object-cover" />}
                   </div>
                   <div className="flex-1">
-                    <Link to={`/systems/${it.slug}`} className="text-sm font-medium text-zinc-900 hover:text-blue-600">
+                    <Link to={`/systems/${it.slug}`} className="text-sm font-medium text-zinc-900 hover:text-[color:var(--color-accent-hover)]">
                       {it.name}
                     </Link>
                     <p className="mt-1 text-xs text-zinc-500">Digital download · Lifetime updates</p>

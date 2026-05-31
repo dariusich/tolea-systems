@@ -119,7 +119,7 @@ function OrdersView({ orders }) {
           {orders.map((o) => (
             <tr key={o.id}>
               <td className="px-5 py-3">
-                <Link to={`/order/${o.id}`} className="font-medium text-zinc-900 hover:text-blue-600">{o.order_number}</Link>
+                <Link to={`/order/${o.id}`} className="font-medium text-zinc-900 hover:text-[color:var(--color-accent-hover)]">{o.order_number}</Link>
               </td>
               <td className="px-5 py-3 text-zinc-700">{shortDate(o.created_at)}</td>
               <td className="px-5 py-3 text-zinc-700">{o.items.length}</td>
@@ -128,7 +128,7 @@ function OrdersView({ orders }) {
                 <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">{o.status}</span>
               </td>
               <td className="px-5 py-3 text-right">
-                <Link to={`/invoice/${o.id}`} className="text-xs text-blue-600 hover:text-blue-700" data-testid={`order-invoice-link-${o.id}`}>
+                <Link to={`/invoice/${o.id}`} className="text-xs text-[color:var(--color-accent)] hover:text-[color:var(--color-accent-hover)]" data-testid={`order-invoice-link-${o.id}`}>
                   Invoice →
                 </Link>
               </td>

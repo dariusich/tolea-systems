@@ -61,7 +61,7 @@ export default function CheckoutReturn() {
       <section className="mx-auto flex max-w-md flex-col items-center px-4 py-24 text-center sm:px-6 lg:px-8" data-testid="checkout-return">
         {state.status === "polling" && (
           <>
-            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+            <Loader2 className="h-8 w-8 animate-spin text-[color:var(--color-accent)]" />
             <h1 className="font-display mt-6 text-3xl tracking-tight text-zinc-900">Confirming payment</h1>
             <p className="mt-2 text-sm text-zinc-600">{state.message}</p>
           </>

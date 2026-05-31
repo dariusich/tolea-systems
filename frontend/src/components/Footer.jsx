@@ -2,15 +2,15 @@ import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
-    <footer className="mt-32 border-t border-zinc-200 bg-zinc-50/60">
+    <footer className="mt-32 border-t border-slate-200 bg-[color:var(--color-surface)]">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-10 md:grid-cols-4">
           <div className="col-span-2">
             <Link to="/" className="flex items-center gap-2">
-              <span className="inline-block h-6 w-6 rounded-md bg-zinc-900" />
-              <span className="text-[15px] font-semibold tracking-tight text-zinc-900">Tolea Systems</span>
+              <span className="inline-grid h-7 w-7 place-items-center rounded-lg bg-[linear-gradient(135deg,#E7C88F,#B88745)] text-[10px] font-black tracking-[-0.08em] text-white">TS</span>
+              <span className="text-[15px] font-semibold tracking-tight text-slate-950">Tolea Systems</span>
             </Link>
-            <p className="mt-4 max-w-md text-sm leading-relaxed text-zinc-500">
+            <p className="mt-4 max-w-md text-sm leading-relaxed text-slate-500">
               Carefully selected algorithmic trading systems with transparent performance and professional analytics.
             </p>
           </div>
@@ -27,9 +27,9 @@ export default function Footer() {
             ["Sign in", "/login"],
           ]} />
         </div>
-        <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-zinc-200 pt-6 text-xs text-zinc-500 sm:flex-row sm:items-center">
-          <p>© {new Date().getFullYear()} Tolea Systems. All rights reserved.</p>
-          <p className="max-w-xl text-right">
+        <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-slate-200 pt-6 text-xs text-slate-500 sm:flex-row sm:items-center">
+          <p>Copyright {new Date().getFullYear()} Tolea Systems. All rights reserved.</p>
+          <p className="max-w-xl text-left sm:text-right">
             Trading involves risk. Past performance is not indicative of future results. Verified data is sourced from connected accounts; numbers reflect historical performance only.
           </p>
         </div>
@@ -41,11 +41,11 @@ export default function Footer() {
 function FooterCol({ title, links }) {
   return (
     <div>
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500">{title}</p>
-      <ul className="mt-4 space-y-2 text-sm text-zinc-700">
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--color-accent-hover)]">{title}</p>
+      <ul className="mt-4 space-y-2 text-sm text-slate-700">
         {links.map(([label, href]) => (
           <li key={label}>
-            <Link className="hover:text-zinc-900" to={href}>{label}</Link>
+            <Link className="hover:text-[color:var(--color-accent-hover)]" to={href}>{label}</Link>
           </li>
         ))}
       </ul>

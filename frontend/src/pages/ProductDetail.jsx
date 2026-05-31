@@ -135,7 +135,7 @@ export default function ProductDetail() {
             <div className="mt-10 rounded-2xl border border-zinc-200 bg-white p-5 sm:p-7">
               <div className="flex items-center justify-between">
                 <h2 className="text-sm font-semibold tracking-tight text-zinc-900">Equity curve · 90 days</h2>
-                <Link to="/live-results" className="text-xs text-blue-600 hover:text-blue-700">Open full live results →</Link>
+                <Link to="/live-results" className="text-xs text-[color:var(--color-accent)] hover:text-[color:var(--color-accent-hover)]">Open full live results →</Link>
               </div>
               <div className="mt-4">
                 <EquityChart data={chartData} height={300} />
@@ -192,7 +192,7 @@ export default function ProductDetail() {
             <div className="mt-4 rounded-2xl border border-zinc-200 bg-white p-5" data-testid="review-section">
               {!user && (
                 <p className="text-sm text-zinc-600">
-                  <Link to="/login" className="font-medium text-blue-600 hover:text-blue-700">Sign in</Link> to leave a review for a product you've purchased.
+                  <Link to="/login" className="font-medium text-[color:var(--color-accent)] hover:text-[color:var(--color-accent-hover)]">Sign in</Link> to leave a review for a product you've purchased.
                 </p>
               )}
 
@@ -206,7 +206,7 @@ export default function ProductDetail() {
                 <div className="text-sm text-zinc-600" data-testid="review-locked">
                   <p className="font-medium text-zinc-900">Verified purchase required</p>
                   <p className="mt-1">Only customers who have purchased this product can leave a review.{" "}
-                    <Link to={`/systems/${slug}`} className="font-medium text-blue-600 hover:text-blue-700"
+                    <Link to={`/systems/${slug}`} className="font-medium text-[color:var(--color-accent)] hover:text-[color:var(--color-accent-hover)]"
                       onClick={(e) => { e.preventDefault(); document.querySelector('[data-testid="product-buy-now"]')?.scrollIntoView({ behavior: "smooth", block: "center" }); }}
                     >Buy this system</Link> to unlock reviewing.
                   </p>
@@ -246,7 +246,7 @@ export default function ProductDetail() {
                     value={reviewForm.title}
                     onChange={(e) => setReviewForm((f) => ({ ...f, title: e.target.value }))}
                     data-testid="review-title"
-                    className="h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                    className="h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-[color:var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[rgba(200,155,90,0.20)]"
                   />
                   <textarea
                     placeholder="What's your experience with this system?"
@@ -254,7 +254,7 @@ export default function ProductDetail() {
                     value={reviewForm.body}
                     onChange={(e) => setReviewForm((f) => ({ ...f, body: e.target.value }))}
                     data-testid="review-body"
-                    className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                    className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-[color:var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[rgba(200,155,90,0.20)]"
                   />
                   {reviewError && <p className="text-xs text-rose-600" data-testid="review-error">{reviewError}</p>}
                   <div className="flex justify-end">

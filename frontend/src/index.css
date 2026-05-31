@@ -5,7 +5,7 @@
 /* --- Tolea Systems base --- */
 html, body, #root {
     background: #ffffff;
-    color: #18181b;
+    color: #0f172a;
 }
 
 body {
@@ -19,26 +19,27 @@ body {
 }
 
 .font-display {
-    font-family: 'Instrument Serif', 'Instrument Sans', 'Inter Tight', serif;
-    font-weight: 400;
-    letter-spacing: -0.025em;
+    font-family: 'Inter Tight', 'Inter', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+        "Helvetica Neue", Arial, sans-serif;
+    font-weight: 650;
+    letter-spacing: -0.035em;
 }
 
 ::selection {
-    background: #dbeafe;
-    color: #1e3a8a;
+    background: #f7efe3;
+    color: #8a622d;
 }
 
 /* subtle dotted texture / radial light for hero */
 .bg-hero-glow {
     background:
-        radial-gradient(60rem 28rem at 50% -10%, rgba(37, 99, 235, 0.08), transparent 60%),
-        radial-gradient(40rem 20rem at 90% 10%, rgba(16, 185, 129, 0.04), transparent 70%),
-        linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+        radial-gradient(60rem 28rem at 18% 8%, rgba(200, 155, 90, 0.17), transparent 64%),
+        radial-gradient(44rem 24rem at 92% 18%, rgba(247, 239, 227, 0.82), transparent 72%),
+        linear-gradient(115deg, #ffffff 0%, #fffdf9 48%, #f7f3ec 100%);
 }
 
 .bg-dotted {
-    background-image: radial-gradient(rgba(24, 24, 27, 0.06) 1px, transparent 1px);
+    background-image: radial-gradient(rgba(200, 155, 90, 0.12) 1px, transparent 1px);
     background-size: 22px 22px;
     mask-image: linear-gradient(to bottom, black 0%, transparent 85%);
 }
@@ -57,7 +58,7 @@ body {
     border: 1px solid #e4e4e7;
     border-radius: 9999px;
     font-size: 0.75rem;
-    color: #52525b;
+    color: #64748b;
     background: #ffffff;
 }
 
@@ -70,6 +71,22 @@ body {
     animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+@keyframes dashboard-in {
+    from { opacity: 0; transform: translate3d(28px, 18px, 0) scale(0.98); }
+    to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+.animate-dashboard-in {
+    animation: dashboard-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
+}
+
+@keyframes stat-pop {
+    from { opacity: 0; transform: translate3d(0, 10px, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+.animate-stat-pop {
+    animation: stat-pop 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 /* Recharts tweaks */
 .recharts-cartesian-grid line {
     stroke: #f4f4f5;
@@ -80,25 +97,34 @@ body {
 
 @layer base {
     :root {
+        --color-accent: #C89B5A;
+        --color-accent-hover: #B88745;
+        --color-accent-light: #F7EFE3;
+        --color-text: #0F172A;
+        --color-muted: #64748B;
+        --color-border: #E5E7EB;
+        --color-success: #16A34A;
+        --color-loss: #DC2626;
+        --color-surface: #FAF7F1;
         --background: 0 0% 100%;
-        --foreground: 240 10% 9%;
+        --foreground: 222 47% 11%;
         --card: 0 0% 100%;
-        --card-foreground: 240 10% 9%;
+        --card-foreground: 222 47% 11%;
         --popover: 0 0% 100%;
-        --popover-foreground: 240 10% 9%;
-        --primary: 221 83% 53%;
+        --popover-foreground: 222 47% 11%;
+        --primary: 35 47% 57%;
         --primary-foreground: 0 0% 100%;
-        --secondary: 240 5% 96%;
-        --secondary-foreground: 240 10% 9%;
-        --muted: 240 5% 96%;
-        --muted-foreground: 240 4% 46%;
-        --accent: 240 5% 96%;
-        --accent-foreground: 240 10% 9%;
+        --secondary: 37 52% 93%;
+        --secondary-foreground: 222 47% 11%;
+        --muted: 37 35% 96%;
+        --muted-foreground: 215 16% 47%;
+        --accent: 37 52% 93%;
+        --accent-foreground: 32 45% 36%;
         --destructive: 0 72% 51%;
         --destructive-foreground: 0 0% 98%;
-        --border: 240 6% 90%;
-        --input: 240 6% 90%;
-        --ring: 221 83% 53%;
+        --border: 220 13% 91%;
+        --input: 220 13% 91%;
+        --ring: 35 47% 57%;
         --radius: 0.625rem;
     }
 }
