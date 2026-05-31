@@ -15,8 +15,8 @@ const EMPTY = {
   min_deposit: 1000,
   recommended_leverage: "1:100",
   risk_level: "Moderate",
-  price: 299,
-  compare_at_price: 0,
+  price: 49,
+  compare_at_price: 250,
   monthly_return: 5,
   drawdown: 8,
   win_rate: 60,
@@ -92,7 +92,7 @@ export default function ProductFormModal({ open, onClose, onSaved, editing }) {
       <div className="my-8 w-full max-w-2xl rounded-2xl border border-zinc-200 bg-white shadow-xl">
         <header className="flex items-center justify-between border-b border-zinc-100 px-6 py-4">
           <h2 className="text-base font-semibold text-zinc-900">
-            {isEdit ? `Edit · ${editing.name}` : "New product"}
+            {isEdit ? `Edit - ${editing.name}` : "New product"}
           </h2>
           <button onClick={onClose} aria-label="Close" className="grid h-8 w-8 place-items-center rounded-md text-zinc-500 hover:bg-zinc-100">
             <X className="h-4 w-4" />
@@ -203,7 +203,7 @@ export default function ProductFormModal({ open, onClose, onSaved, editing }) {
               data-testid="pf-submit"
               className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-60"
             >
-              <Save className="h-4 w-4" /> {busy ? "Saving…" : isEdit ? "Save changes" : "Create product"}
+              <Save className="h-4 w-4" /> {busy ? "Saving..." : isEdit ? "Save changes" : "Create product"}
             </button>
           </div>
         </form>

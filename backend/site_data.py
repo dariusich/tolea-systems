@@ -31,11 +31,28 @@ PRODUCTS: list[dict[str, Any]] = [
         "strategy_type": "Gold grid EA",
         "tagline": "Gold-focused MT4 Expert Advisor with optimized Tolea Systems set files.",
         "description": (
-            "AURIX Neural Edge AI is an MT4 Expert Advisor for XAUUSD. It combines a higher-timeframe "
-            "trend bias with short-timeframe momentum confirmation, then manages recovery cycles with "
-            "fixed-lot grid logic and ATR-adaptive spacing. The product is designed for traders who want "
-            "structured gold automation with clear chart telemetry, not a black-box terminal."
+            "AURIX Neural Edge AI is an MT4 Expert Advisor prepared for XAUUSD trading with a disciplined "
+            "grid-recovery structure. The system evaluates broader directional context together with shorter "
+            "momentum confirmation before a cycle is allowed to start. Once a position is open, AURIX manages "
+            "the basket with fixed-lot recovery levels, adaptive spacing, break-even logic, and group take-profit "
+            "handling. The Tolea Systems package focuses on practical implementation: optimized set files, "
+            "recommended account settings, and risk profiles designed to keep the strategy more controlled in "
+            "real trading conditions. It is built for traders who want a structured gold EA with visible logic, "
+            "clear setup instructions, and external result verification instead of an unclear black-box setup."
         ),
+        "what_it_does": (
+            "AURIX combines a trend filter, a momentum trigger, and recovery-cycle management. The EA waits for "
+            "alignment before opening exposure, then adjusts the distance between recovery levels based on market "
+            "conditions. The objective is not to win every individual entry, but to manage the complete cycle with "
+            "defined risk controls, clean exits, and transparent chart feedback."
+        ),
+        "technical_requirements": [
+            "MetaTrader 4 terminal installed on a stable VPS",
+            "XAUUSD symbol enabled with low spread and stable execution",
+            "Cent account preferred for finer lot scaling",
+            "Account history and Expert Advisor permissions enabled",
+            "Correct set file loaded before live trading",
+        ],
         "features": [
             "Higher-timeframe trend bias with M5 momentum confirmation",
             "ATR-adaptive grid spacing for changing gold volatility",
@@ -77,7 +94,7 @@ PRODUCTS: list[dict[str, Any]] = [
         "rating": 4.33,
         "review_count": 11,
         "price": 49,
-        "compare_at_price": 98,
+        "compare_at_price": 250,
         "featured": True,
         "mql5_url": "https://www.mql5.com/en/market/product/174228",
         "myfxbook_url": "https://www.myfxbook.com/portfolio/matrader-ai/12049485",
@@ -98,11 +115,27 @@ PRODUCTS: list[dict[str, Any]] = [
         "strategy_type": "XAUUSD AI EA",
         "tagline": "XAUUSD M1 MT4 Expert Advisor with optimized set files and implementation support.",
         "description": (
-            "MATrader AI is an MT4 Expert Advisor focused on XAUUSD M1. It uses adaptive cycle/grid "
-            "logic, neural-style entry filtering, flexible lot handling, and account-level protection "
-            "tools. The setup is mainly intended for RoboForex cent account conditions where small lot "
-            "granularity and execution costs match the strategy profile."
+            "MATrader AI is an MT4 Expert Advisor focused on XAUUSD M1 execution. It uses adaptive trade-cycle "
+            "logic, entry filtering, configurable money management, and account-level protection tools to manage "
+            "gold positions in a structured way. The Tolea Systems version is delivered with optimized set files "
+            "and setup guidance so the EA is not installed with generic settings. The goal is to match the robot "
+            "with broker conditions, account size, and risk profile before it is used on a real account. This "
+            "makes MATrader AI suitable for traders who want a prepared gold automation package with practical "
+            "implementation support and Myfxbook-linked result transparency."
         ),
+        "what_it_does": (
+            "MATrader AI searches for XAUUSD opportunities on a short timeframe, then manages positions through "
+            "configurable cycle logic. It can use fixed or balance-based sizing, time and day filters, news-aware "
+            "controls, trailing options, and equity protection. The important part is the configuration: lot size, "
+            "risk mode, broker spread, and VPS stability all affect the final result."
+        ),
+        "technical_requirements": [
+            "MetaTrader 4 terminal running continuously",
+            "XAUUSD M1 chart with AutoTrading enabled",
+            "Cent account conditions recommended for small position sizing",
+            "Low-latency VPS for consistent order handling",
+            "Tolea set file loaded for the selected risk profile",
+        ],
         "features": [
             "Optimized for XAUUSD M1 standard settings",
             "Adaptive cycle and grid management options",
@@ -144,7 +177,7 @@ PRODUCTS: list[dict[str, Any]] = [
         "rating": 4.63,
         "review_count": 146,
         "price": 49,
-        "compare_at_price": 98,
+        "compare_at_price": 250,
         "featured": True,
         "mql5_url": "https://www.mql5.com/en/market/product/147979",
         "myfxbook_url": "https://www.myfxbook.com/portfolio/matrader/12039419",
@@ -160,11 +193,26 @@ PRODUCTS: list[dict[str, Any]] = [
         "strategy_type": "Scalping EA",
         "tagline": "MT4 scalping Expert Advisor prepared with risk-focused custom set files.",
         "description": (
-            "MATrader QuickScalper is a separate MT4 Expert Advisor in the MATrader ecosystem. It is "
-            "focused on short trade cycles, fast execution, strict trade handling, and cent-account lot "
-            "granularity. It is designed as a focused scalping system rather than a simplified version "
-            "of MATrader AI."
+            "QuickScalper is a dedicated MT4 scalping Expert Advisor built around short trade cycles, strict "
+            "execution handling, and controlled exposure. It is not simply a smaller version of MATrader AI; it "
+            "is prepared as a separate fast-cycle system where spread, latency, broker feed, and lot precision "
+            "matter more. The Tolea Systems package includes optimized set files and account setup notes so the "
+            "EA can be configured for a cleaner operating environment. QuickScalper is best treated as a focused "
+            "scalping tool that needs stable VPS conditions, proper risk sizing, and regular monitoring."
         ),
+        "what_it_does": (
+            "QuickScalper looks for short-duration opportunities and manages them through predefined trade "
+            "handling rules. The configuration can include fixed or balance-based sizing, trailing modules, "
+            "equity protection, Friday close behavior, Monday delayed start logic, and news filters. Because "
+            "scalping is sensitive, the recommended setup is part of the product, not an afterthought."
+        ),
+        "technical_requirements": [
+            "MetaTrader 4 terminal on a reliable VPS",
+            "Low spread broker conditions and stable XAUUSD feed",
+            "Cent account with fine lot granularity preferred",
+            "AutoTrading enabled and news/session filters configured",
+            "Tolea optimized set file selected for the account size",
+        ],
         "features": [
             "Dedicated scalping engine with short trade duration focus",
             "Strict execution discipline and controlled trade frequency",
@@ -205,7 +253,7 @@ PRODUCTS: list[dict[str, Any]] = [
         "rating": 4.6,
         "review_count": 1,
         "price": 49,
-        "compare_at_price": 98,
+        "compare_at_price": 250,
         "featured": True,
         "mql5_url": "https://www.mql5.com/en/market/product/158178",
         "myfxbook_url": "https://www.myfxbook.com/portfolio/dsys-beta/12049164",

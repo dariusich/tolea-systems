@@ -59,25 +59,25 @@ export default function Contact() {
   return (
     <>
       <PageHelmet title="Contact" description="Request access or setup help for Tolea Systems Expert Advisors." />
-      <main className="min-h-screen bg-[#F8F6EF] px-4 py-14 sm:px-6 lg:px-8">
-        <section className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.85fr_1.15fr]">
+      <main className="min-h-screen bg-[color:var(--color-bg)] py-14 text-[color:var(--color-text)]">
+        <section className="container-prose grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#E7E4DA] bg-white px-4 py-2 text-sm font-black text-[#087F5B]">
+            <span className="inline-flex items-center gap-2 rounded-full border border-[color:var(--color-border)] bg-white px-4 py-2 text-sm font-semibold text-[color:var(--color-accent)]">
               <Mail className="h-4 w-4" />
               Contact
             </span>
-            <h1 className="mt-6 text-5xl font-black leading-tight tracking-tight text-[#111827]">Get access or setup guidance.</h1>
-            <p className="mt-5 max-w-xl text-lg leading-8 text-[#6B7280]">
+            <h1 className="mt-6 text-5xl font-bold leading-tight tracking-tight">Get access or setup guidance.</h1>
+            <p className="mt-5 max-w-xl text-lg leading-relaxed text-[color:var(--color-muted)]">
               Request access, ask for setup help, or discuss the best EA configuration for your account.
             </p>
-            <div className="mt-8 rounded-2xl border border-[#E7E4DA] bg-white p-5 text-sm leading-6 text-[#6B7280] shadow-sm">
+            <div className="mt-8 rounded-[14px] border border-[color:var(--color-border)] bg-white p-5 text-sm leading-relaxed text-[color:var(--color-muted)]">
               We will help you choose between Low Risk, Balanced, and Aggressive set file profiles based on account size, broker conditions, and your drawdown tolerance.
             </div>
           </div>
 
-          <form onSubmit={submit} className="rounded-2xl border border-[#E7E4DA] bg-white p-5 shadow-[0_24px_70px_rgba(17,24,39,0.08)] sm:p-7">
+          <form onSubmit={submit} className="rounded-[14px] border border-[color:var(--color-border)] bg-white p-5 shadow-[0_16px_44px_rgba(24,24,27,0.08)] sm:p-7">
             {success && (
-              <div className="mb-5 flex items-start gap-3 rounded-xl border border-emerald-100 bg-emerald-50 p-4 text-sm font-bold text-[#087F5B]">
+              <div className="mb-5 flex items-start gap-3 rounded-[10px] border border-[rgba(31,157,86,0.18)] bg-[rgba(31,157,86,0.08)] p-4 text-sm font-semibold text-[color:var(--color-success)]">
                 <CheckCircle2 className="mt-0.5 h-5 w-5" />
                 Your request was received. We will review your setup details and reply with the next steps.
               </div>
@@ -110,9 +110,9 @@ export default function Contact() {
               <textarea value={form.message} onChange={(e) => update("message", e.target.value)} className="contact-input min-h-36 py-3" placeholder="Tell us your account type, risk preference, and what you need help with." />
             </Field>
 
-            {error && <p className="mt-4 text-sm font-bold text-[#EF4444]">{error}</p>}
+            {error && <p className="mt-4 text-sm font-semibold text-[color:var(--color-danger)]">{error}</p>}
 
-            <button type="submit" disabled={submitting} className="mt-6 inline-flex h-12 w-full items-center justify-center rounded-xl bg-[#087F5B] text-sm font-black text-white transition-colors hover:bg-[#059669] disabled:opacity-60">
+            <button type="submit" disabled={submitting} className="btn-gold mt-6 w-full disabled:opacity-60">
               {submitting ? "Sending..." : "Send request"}
             </button>
           </form>
@@ -125,7 +125,7 @@ export default function Contact() {
 function Field({ label, children, className = "" }) {
   return (
     <label className={`block ${className}`}>
-      <span className="text-[11px] font-black uppercase tracking-[0.14em] text-[#6B7280]">{label}</span>
+      <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[color:var(--color-dim)]">{label}</span>
       <div className="mt-2">{children}</div>
     </label>
   );
