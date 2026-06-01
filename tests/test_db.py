@@ -112,6 +112,8 @@ def test_known_accounts_get_friendly_names_and_stable_slugs(tmp_path):
     assert mt5_result["slug"] == "mt5-77045247"
     assert db.get_account_by_slug("mt4-35115307")["display_name"] == "DSys Beta"
     assert db.get_account_by_slug("mt5-77045247")["display_name"] == "DSys Alpha"
+    assert db.get_account_by_slug("mt4-35115307")["resultSource"] == "myfxbook"
+    assert db.get_account_by_slug("mt5-77045247")["resultSource"] == "liveCollector"
 
 
 def test_mt4_default_spool_paths_ignore_processed_archives(tmp_path, monkeypatch):

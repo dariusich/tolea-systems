@@ -1,6 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, CheckCircle2, LineChart, Settings2, ShieldCheck, SlidersHorizontal } from "lucide-react";
+import {
+  ArrowRight,
+  BadgeCheck,
+  Download,
+  LineChart,
+  Rocket,
+  ShieldCheck,
+  Target,
+  TrendingUp,
+} from "lucide-react";
 import { api } from "@/lib/api";
 import { money, number } from "@/lib/format";
 import ProductCard from "@/components/ProductCard";
@@ -11,28 +20,45 @@ import { EquityChart } from "@/components/Charts";
 const DISCLAIMER = "Trading involves risk. Past performance does not guarantee future results. Expert Advisors can generate drawdown, especially in volatile market conditions. Use proper risk management.";
 
 const faqs = [
-  ["Are the systems ready to use?", "Each EA is delivered with Tolea Systems set files and setup guidance. You still need to install it correctly, use a suitable broker, and choose a risk profile that matches your account."],
+  ["How are MT4 results verified?", "MT4 products use public Myfxbook result links. They are not connected to the internal live collector."],
+  ["How are MT5 results shown live?", "MT5 accounts can be connected through the lightweight VPS collector and then displayed in the Live Results dashboard."],
   ["Is the checkout live?", "The current checkout flow is demo-safe. It records a demo order only and does not charge a card until a real payment processor is connected."],
-  ["Why do you show Myfxbook?", "Screenshots alone are not enough. Myfxbook links help buyers review public result pages and compare them with the live-results dashboard."],
 ];
+
+const steps = [
+  { icon: Target, number: "01", title: "Choose a System", text: "Browse our catalog of high quality EAs." },
+  { icon: Download, number: "02", title: "Download & Setup", text: "Get everything you need to get started." },
+  { icon: Rocket, number: "03", title: "Go Live", text: "Run on your account with confidence." },
+  { icon: TrendingUp, number: "$49", title: "From only", text: "One-time payment. No hidden fees." },
+];
+
+function accountResultSource(account) {
+  return account?.resultSource || account?.result_source || (account?.platform === "MT4" ? "myfxbook" : "liveCollector");
+}
 
 export default function Home() {
   const [products, setProducts] = useState([]);
-  const [summary, setSummary] = useState(null);
   const [previewAccount, setPreviewAccount] = useState(null);
   const [previewTrades, setPreviewTrades] = useState([]);
+  const [previewLoading, setPreviewLoading] = useState(true);
 
   useEffect(() => {
     api.get("/products").then(({ data }) => setProducts((data.products || []).slice(0, 3)));
-    api.get("/accounts").then(({ data }) => {
-      setSummary(data.summary);
-      if (data.accounts?.[0]) {
-        api.get(`/accounts/${data.accounts[0].slug}`).then(({ data: details }) => {
+    api
+      .get("/accounts")
+      .then(({ data }) => {
+        const liveAccount = (data.accounts || []).find((item) => accountResultSource(item) === "liveCollector" || item.platform === "MT5");
+        if (!liveAccount?.slug) {
+          setPreviewAccount(null);
+          setPreviewTrades([]);
+          return;
+        }
+        return api.get(`/accounts/${liveAccount.slug}`).then(({ data: details }) => {
           setPreviewAccount(details.account);
           setPreviewTrades(details.trades || []);
         });
-      }
-    });
+      })
+      .finally(() => setPreviewLoading(false));
   }, []);
 
   const bestDay = useMemo(() => {
@@ -48,46 +74,46 @@ export default function Home() {
   return (
     <>
       <PageHelmet
-        title="Optimized MT4 Expert Advisors"
-        description="Tolea Systems delivers optimized MT4 Expert Advisors with set files, setup guidance, and transparent live-result tracking."
+        title="Professional EAs With Verified Results"
+        description="Tolea Systems delivers premium MetaTrader Expert Advisors with Myfxbook verification for MT4 and live collector analytics for MT5."
       />
 
-      <main className="bg-[color:var(--color-bg)] text-[color:var(--color-text)]">
-        <section className="border-b border-[color:var(--color-border)] bg-grid-gold">
-          <div className="container-prose grid gap-12 py-20 md:grid-cols-[1fr_1.05fr] md:items-center md:py-24">
-            <div className="fade-up">
-              <BrandLogo className="mb-8 max-w-[330px]" />
-              <p className="eyebrow">Optimized Expert Advisors for MetaTrader 4</p>
-              <h1 className="mt-4 max-w-3xl text-4xl font-bold leading-[1.05] tracking-tight sm:text-5xl md:text-6xl">
-                Clean automated trading systems with verified results.
-              </h1>
-              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-[color:var(--color-muted)]">
-                A focused catalog of gold trading systems delivered with custom set files, setup guidance, and public result links so you can evaluate the strategy before using it.
+      <main className="bg-white text-[color:var(--color-text)]">
+        <section className="overview-hero">
+          <div className="overview-hero-inner">
+            <div className="overview-hero-copy fade-up">
+              <BrandLogo className="mb-8 max-w-[310px]" />
+              <p className="overview-badge">
+                <BadgeCheck className="h-4 w-4" />
+                Optimized Expert Advisors for MetaTrader 4/5
               </p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Link className="btn-gold" to="/systems">
+              <h1 className="mt-9 max-w-3xl text-[clamp(3.1rem,6.2vw,5.9rem)] font-black leading-[0.98] tracking-[0]">
+                Clean automated trading systems with <span className="gold-gradient-text">verified results.</span>
+              </h1>
+              <p className="mt-7 max-w-2xl text-[17px] leading-8 text-[color:var(--color-muted)] md:text-[19px]">
+                A focused catalog of gold trading systems delivered with custom set files, setup guidance, and transparent public result links before you use them.
+              </p>
+              <div className="mt-9 flex flex-wrap gap-4">
+                <Link className="home-primary-cta" to="/systems">
                   View Products <ArrowRight className="h-4 w-4" />
                 </Link>
-                <Link className="btn-ghost-gold" to="/live-results">
+                <Link className="home-secondary-cta" to="/live-results">
                   Live Results <LineChart className="h-4 w-4" />
                 </Link>
               </div>
-              <p className="mt-7 flex items-center gap-2 text-sm text-[color:var(--color-dim)]">
-                <span className="h-2 w-2 rounded-full bg-[color:var(--color-success)]" />
-                Real dashboard data appears as soon as the VPS collector syncs accounts.
+              <p className="mt-7 flex items-center gap-3 text-sm font-medium text-[color:var(--color-muted)]">
+                <span className="h-2.5 w-2.5 rounded-full bg-[color:var(--color-success)] shadow-[0_0_0_5px_rgba(22,163,74,0.12)]" />
+                MT5 live data appears as soon as the VPS collector syncs. MT4 results are verified via Myfxbook.
               </p>
             </div>
 
-            <ResultsPreview account={previewAccount} summary={summary} bestDay={bestDay} />
+            <ResultsPreview account={previewAccount} trades={previewTrades} bestDay={bestDay} loading={previewLoading} />
           </div>
-        </section>
 
-        <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-surface)]">
-          <div className="container-prose grid grid-cols-2 divide-x divide-y divide-[color:var(--color-border)] md:grid-cols-4 md:divide-y-0">
-            <ProofItem value="3" label="Curated EAs" />
-            <ProofItem value={summary?.active_systems || "MT4"} label="Connected accounts" />
-            <ProofItem value="3" label="Myfxbook links" />
-            <ProofItem value="$49" label="Limited offer" />
+          <div className="overview-steps fade-up">
+            {steps.map((item) => (
+              <StepItem key={`${item.number}-${item.title}`} {...item} />
+            ))}
           </div>
         </section>
 
@@ -104,17 +130,17 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="border-y border-[color:var(--color-border)] bg-[color:var(--color-surface)]">
+        <section className="border-y border-[color:var(--color-border)] bg-[color:var(--color-surface-soft)]">
           <div className="container-prose py-20">
             <SectionHeading
-              eyebrow="Process"
-              title="Built around setup quality"
-              text="A trading robot is only useful when the environment, risk settings, and monitoring workflow are clear."
+              eyebrow="Verification"
+              title="Clear result sources"
+              text="MT4 products show Myfxbook verification. MT5 accounts can use the live collector dashboard when a terminal is connected."
             />
             <div className="mt-10 grid gap-5 md:grid-cols-3">
-              <WhyCard icon={SlidersHorizontal} title="Optimized Set Files" text="Prepared configuration files for the intended account type and risk profile." />
-              <WhyCard icon={Settings2} title="Practical Setup Support" text="Clear installation guidance, broker notes, VPS recommendations, and implementation support." />
-              <WhyCard icon={ShieldCheck} title="Risk Context" text="No aggressive promises. Every product page shows risk warnings and result links." />
+              <WhyCard icon={ShieldCheck} title="MT4 Myfxbook Results" text="Public Myfxbook links are used for MT4 products instead of internal live sync." />
+              <WhyCard icon={LineChart} title="MT5 Live Analytics" text="MT5 can power the internal dashboard with closed trades, equity curve, daily PnL, and stats." />
+              <WhyCard icon={BadgeCheck} title="Risk Context" text="Every product keeps a visible risk warning and avoids aggressive performance promises." />
             </div>
           </div>
         </section>
@@ -123,7 +149,7 @@ export default function Home() {
           <div className="grid gap-10 md:grid-cols-[1fr_1.2fr]">
             <div>
               <p className="eyebrow">FAQ</p>
-              <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">Frequently asked</h2>
+              <h2 className="mt-3 text-3xl font-bold tracking-[0] md:text-4xl">Frequently asked</h2>
             </div>
             <div className="divide-y divide-[color:var(--color-border)] border-y border-[color:var(--color-border)]">
               {faqs.map(([question, answer]) => (
@@ -149,28 +175,52 @@ export default function Home() {
   );
 }
 
-function ResultsPreview({ account, summary, bestDay }) {
+function ResultsPreview({ account, trades, bestDay, loading }) {
+  const connected = Boolean(account);
+  const chart = account?.chart || [];
+  const totalProfit = connected ? money(account.total_profit) : "--";
+  const winRate = connected ? `${Number(account.win_rate || 0).toFixed(1)}%` : "--";
+  const totalTrades = connected ? number(account.trades_count || trades.length || 0) : "--";
+  const bestDayValue = connected && bestDay ? money(bestDay[1]) : "--";
+
   return (
-    <section className="card-elevated fade-up">
+    <section className="hero-proof-card fade-up">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="eyebrow">Live trading proof</p>
-          <h2 className="mt-2 text-2xl font-bold tracking-tight">Results preview</h2>
+          <p className="text-xs font-bold uppercase tracking-[0.24em] text-[color:var(--color-dim)]">Live trading proof</p>
+          <h2 className="mt-2 text-2xl font-black tracking-[0]">Results preview</h2>
         </div>
-        <span className="chip-success">Connected</span>
+        <span className={connected ? "chip-success" : "chip-waiting"}>
+          <span className="h-2 w-2 rounded-full bg-current" />
+          {connected ? "MT5 Live" : loading ? "Checking" : "Waiting"}
+        </span>
       </div>
-      <div className="mt-6 grid gap-3 sm:grid-cols-2">
-        <ResultPreviewCard label="Total Profit" value={money(summary?.total_profit || account?.total_profit || 0)} tone="profit" />
-        <ResultPreviewCard label="Win Rate" value={`${Number(account?.win_rate || 0).toFixed(1)}%`} />
-        <ResultPreviewCard label="Total Trades" value={number(account?.trades_count || 0)} />
-        <ResultPreviewCard label="Best Day" value={bestDay ? money(bestDay[1]) : money(0)} tone="profit" />
+
+      <div className="mt-7 grid gap-3 sm:grid-cols-2">
+        <ResultPreviewCard label="Total Profit" value={totalProfit} sublabel={connected ? "Closed MT5 PnL" : "Waiting for MT5"} tone="profit" />
+        <ResultPreviewCard label="Win Rate" value={winRate} sublabel={connected ? "Average" : "No live account"} />
+        <ResultPreviewCard label="Total Trades" value={totalTrades} sublabel={connected ? "All time" : "No trades yet"} />
+        <ResultPreviewCard label="Best Day" value={bestDayValue} sublabel={bestDay?.[0] || "No day selected"} tone="profit" />
       </div>
-      <div className="mt-5 rounded-[14px] border border-[color:var(--color-border)] bg-[color:var(--color-bg)] p-4">
-        {account?.chart?.length ? (
-          <EquityChart data={account.chart} height={220} />
+
+      <div className="mt-5 rounded-[18px] border border-[color:var(--color-border)] bg-white p-4">
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[color:var(--color-muted)]">Equity Curve</p>
+          <span className="rounded-[10px] border border-[color:var(--color-border)] px-3 py-1 text-xs font-semibold text-[color:var(--color-muted)]">All time</span>
+        </div>
+        {chart.length ? (
+          <div className="mt-4">
+            <EquityChart data={chart} height={230} />
+          </div>
         ) : (
-          <div className="grid h-[220px] place-items-center text-center text-sm font-medium text-[color:var(--color-muted)]">
-            Live chart appears after the collector syncs account history.
+          <div className="mt-4 grid h-[230px] place-items-center rounded-[14px] border border-dashed border-[color:var(--color-border-strong)] bg-[color:var(--color-bg)] text-center">
+            <div>
+              <LineChart className="mx-auto h-7 w-7 text-[color:var(--color-accent)]" />
+              <p className="mt-3 text-sm font-bold text-[color:var(--color-text)]">Waiting for MT5 live data</p>
+              <p className="mt-1 max-w-xs text-xs font-medium leading-5 text-[color:var(--color-muted)]">
+                Start the MT5 collector on the VPS to populate this proof card.
+              </p>
+            </div>
           </div>
         )}
       </div>
@@ -178,25 +228,29 @@ function ResultsPreview({ account, summary, bestDay }) {
   );
 }
 
-function ResultPreviewCard({ label, value, tone }) {
+function ResultPreviewCard({ label, value, sublabel, tone }) {
   const cls = tone === "profit" ? "text-[color:var(--color-success)]" : tone === "loss" ? "text-[color:var(--color-danger)]" : "text-[color:var(--color-text)]";
   return (
-    <div className="rounded-[14px] border border-[color:var(--color-border)] bg-white p-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--color-dim)]">{label}</p>
-      <p className={`mt-2 text-2xl font-bold ${cls}`}>{value}</p>
+    <div className="rounded-[16px] border border-[color:var(--color-border)] bg-white p-5 shadow-[0_14px_34px_rgba(15,23,42,0.045)] transition hover:-translate-y-0.5 hover:border-[color:var(--color-accent)]">
+      <p className="text-xs font-bold uppercase tracking-[0.16em] text-[color:var(--color-dim)]">{label}</p>
+      <p className={`mt-2 text-2xl font-black ${cls}`}>{value}</p>
+      <p className="mt-1 text-sm font-medium text-[color:var(--color-muted)]">{sublabel}</p>
     </div>
   );
 }
 
-function ProofItem({ value, label }) {
+function StepItem({ icon: Icon, number, title, text }) {
   return (
-    <div className="px-4 py-7 text-center">
-      <div className="mx-auto flex w-fit items-center gap-2 text-3xl font-bold tracking-tight text-[color:var(--color-accent)]">
-        <CheckCircle2 className="h-5 w-5" />
-        {value}
+    <article className="overview-step-card">
+      <span className="overview-step-icon">
+        <Icon className="h-7 w-7" />
+      </span>
+      <div>
+        <p className="text-sm font-black text-[color:var(--color-accent)]">{number}</p>
+        <h3 className="mt-1 text-lg font-black tracking-[0]">{title}</h3>
+        <p className="mt-2 text-sm leading-6 text-[color:var(--color-muted)]">{text}</p>
       </div>
-      <p className="mt-1.5 text-xs font-semibold uppercase tracking-wider text-[color:var(--color-dim)]">{label}</p>
-    </div>
+    </article>
   );
 }
 
@@ -204,7 +258,7 @@ function SectionHeading({ eyebrow, title, text }) {
   return (
     <div className="max-w-2xl">
       <p className="eyebrow">{eyebrow}</p>
-      <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">{title}</h2>
+      <h2 className="mt-3 text-3xl font-bold tracking-[0] md:text-4xl">{title}</h2>
       <p className="mt-4 text-[15px] leading-relaxed text-[color:var(--color-muted)]">{text}</p>
     </div>
   );

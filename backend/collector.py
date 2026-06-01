@@ -11,7 +11,6 @@ import requests
 
 from . import db
 from .config import DB_DIR, POLL_INTERVAL_SECONDS
-from .mt4_bridge import collect_mt4_payloads, default_spool_paths, processed_spool_paths
 from .mt5_connector import collect_all_mt5_payloads
 
 
@@ -19,7 +18,8 @@ QUEUE_PATH = Path(os.getenv("TRADEJOURNAL_QUEUE_PATH", str(DB_DIR / "collector_q
 SERVER_URL = os.getenv("TRADEJOURNAL_SERVER_URL", "").rstrip("/")
 COLLECTOR_KEY = os.getenv("TRADEJOURNAL_COLLECTOR_KEY", "change-me")
 ENABLE_MT5 = os.getenv("TRADEJOURNAL_ENABLE_MT5", "1").lower() not in {"0", "false", "no"}
-ENABLE_MT4 = os.getenv("TRADEJOURNAL_ENABLE_MT4", "1").lower() not in {"0", "false", "no"}
+ENABLE_MT4 = False
+_mt4_notice_logged = False
 
 
 def log(message: str) -> None:
@@ -112,6 +112,7 @@ def flush_queue(limit: int = 100) -> None:
 
 
 def collect_payloads() -> list[dict[str, Any]]:
+    global _mt4_notice_logged
     payloads: list[dict[str, Any]] = []
     if ENABLE_MT5:
         try:
@@ -120,16 +121,9 @@ def collect_payloads() -> list[dict[str, Any]]:
             log(f"MT5 collected payloads={len(mt5_payloads)} trades={sum(payload_trade_count(item) for item in mt5_payloads)}")
         except Exception as exc:
             log(f"MT5 sync skipped: {exc}")
-    if ENABLE_MT4:
-        try:
-            active_paths = default_spool_paths()
-            ignored_paths = processed_spool_paths()
-            log(f"MT4 active spool files={len(active_paths)} ignored processed archives={len(ignored_paths)}")
-            mt4_payloads = collect_mt4_payloads(active_paths)
-            payloads.extend(mt4_payloads)
-            log(f"MT4 collected payloads={len(mt4_payloads)} trades={sum(payload_trade_count(item) for item in mt4_payloads)}")
-        except Exception as exc:
-            log(f"MT4 bridge sync skipped: {exc}")
+    if not _mt4_notice_logged:
+        log("MT4 live collector disabled; MT4 results are handled via Myfxbook links only.")
+        _mt4_notice_logged = True
     return payloads
 
 
@@ -158,7 +152,7 @@ def run_collector_forever() -> None:
     log(
         "started "
         f"server={SERVER_URL or 'local sqlite'} "
-        f"mt4={ENABLE_MT4} mt5={ENABLE_MT5} interval={POLL_INTERVAL_SECONDS}s queue={QUEUE_PATH}"
+        f"mt4=False(Myfxbook-only) mt5={ENABLE_MT5} interval={POLL_INTERVAL_SECONDS}s queue={QUEUE_PATH}"
     )
     while True:
         started = time.monotonic()

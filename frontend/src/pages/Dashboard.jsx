@@ -1,11 +1,8 @@
 import {
   Activity,
-  BarChart3,
   Bell,
-  CalendarDays,
   ExternalLink,
   Home,
-  LineChart,
   PackageOpen,
   RefreshCw,
   Server,
@@ -53,7 +50,31 @@ function net(trade) {
 function accountLabel(account) {
   if (!account) return "";
   const display = account.display_name || account.name || `${account.platform} ${account.login}`;
-  return `${display} - ${account.platform} ${account.login}`;
+  return `${display} - ${account.platform} ${account.login} - ${account.results_label || (isMyfxbookAccount(account) ? "Myfxbook Results" : "Live Results")}`;
+}
+
+function accountResultSource(account) {
+  return account?.resultSource || account?.result_source || (account?.platform === "MT4" ? "myfxbook" : "liveCollector");
+}
+
+function isMyfxbookAccount(account) {
+  return accountResultSource(account) === "myfxbook" || account?.platform === "MT4";
+}
+
+function isLiveCollectorAccount(account) {
+  return !isMyfxbookAccount(account);
+}
+
+function myfxbookForAccount(account) {
+  if (account?.myfxbook) return account.myfxbook;
+  if (account?.platform === "MT4" && String(account?.login) === "35115307") {
+    return {
+      profile_url: "https://www.myfxbook.com/members/dariusch/dsys-beta/12049164",
+      widget_url: "https://widget.myfxbook.com/widget/widget.png?accountOid=12049164&type=6",
+      label: "DSys Beta verified profile",
+    };
+  }
+  return null;
 }
 
 export default function Dashboard() {
@@ -139,15 +160,28 @@ export default function Dashboard() {
     const safeLoad = async () => {
       setLoadingAccount(true);
       try {
-        const [accountData, statsData, dailyData, equityData, tradesData] = await Promise.all([
-          tradeApi.account(token, activeSlug),
+        const accountData = await tradeApi.account(token, activeSlug);
+        if (!active) return;
+        const nextAccount = accountData.account;
+        setAccount(nextAccount);
+        if (isMyfxbookAccount(nextAccount)) {
+          setStats(null);
+          setDays([]);
+          setTradesByDay({});
+          setEquity([]);
+          setTrades([]);
+          setSelectedDate(null);
+          setError("");
+          setLastRefresh(new Date());
+          return;
+        }
+        const [statsData, dailyData, equityData, tradesData] = await Promise.all([
           tradeApi.stats(token, activeSlug),
           tradeApi.dailyPnl(token, activeSlug),
           tradeApi.equity(token, activeSlug),
           tradeApi.trades(token, activeSlug),
         ]);
         if (!active) return;
-        setAccount(accountData.account);
         setStats(statsData.stats);
         setDays(dailyData.days || []);
         setTradesByDay(dailyData.tradesByDay || {});
@@ -213,7 +247,7 @@ export default function Dashboard() {
         <section className="empty-state">
           <Server size={34} />
           <h1>No accounts synced yet.</h1>
-          <p>The dashboard will populate as soon as the VPS collector sends real MT4 or MT5 data.</p>
+          <p>MT5 live dashboards populate as soon as the VPS collector sends data. MT4 products use Myfxbook result links.</p>
         </section>
       </Shell>
     );
@@ -233,42 +267,48 @@ export default function Dashboard() {
         <div className="loading-block">Loading account performance...</div>
       ) : (
         <>
-          <StatsPanel stats={stats} account={account} />
+          {account && isMyfxbookAccount(account) ? (
+            <MyfxbookOnlyDashboard account={account} />
+          ) : (
+            <>
+              <StatsPanel stats={stats} account={account} />
 
-          <div className="dashboard-grid" id="calendar">
-            <EquityCurve data={equity} currency={accountCurrency} />
-            <CalendarPnL
-              days={days}
-              tradesByDay={tradesByDay}
-              currency={accountCurrency}
-              selectedDate={selectedDate}
-              onSelectDate={setSelectedDate}
-            />
-          </div>
+              <div className="dashboard-grid" id="calendar">
+                <EquityCurve data={equity} currency={accountCurrency} />
+                <CalendarPnL
+                  days={days}
+                  tradesByDay={tradesByDay}
+                  currency={accountCurrency}
+                  selectedDate={selectedDate}
+                  onSelectDate={setSelectedDate}
+                />
+              </div>
 
-          <div className="bottom-grid">
-            <div className="side-stack" id="trades">
-              <section className="day-drilldown">
-                <div>
-                  <span className="eyebrow">{selectedDate || "All closed trades"}</span>
-                  <h2 className={dayProfit >= 0 ? "positive" : "negative"}>{money(dayProfit, accountCurrency)}</h2>
+              <div className="bottom-grid">
+                <div className="side-stack" id="trades">
+                  <section className="day-drilldown">
+                    <div>
+                      <span className="eyebrow">{selectedDate || "All closed trades"}</span>
+                      <h2 className={dayProfit >= 0 ? "positive" : "negative"}>{money(dayProfit, accountCurrency)}</h2>
+                    </div>
+                    {selectedDate && <button type="button" onClick={() => setSelectedDate(null)}>Clear day</button>}
+                  </section>
+                  <TradesTable
+                    trades={recentTrades}
+                    currency={accountCurrency}
+                    title={selectedDate ? `Trades on ${selectedDate}` : "Recent Trades"}
+                    totalCount={selectedDate ? selectedTrades.length : trades.length}
+                    limit={8}
+                  />
                 </div>
-                {selectedDate && <button type="button" onClick={() => setSelectedDate(null)}>Clear day</button>}
-              </section>
-              <TradesTable
-                trades={recentTrades}
-                currency={accountCurrency}
-                title={selectedDate ? `Trades on ${selectedDate}` : "Recent Trades"}
-                totalCount={selectedDate ? selectedTrades.length : trades.length}
-                limit={8}
-              />
-            </div>
-            <div className="side-stack" id="analytics">
-              <SymbolPerformance symbols={symbolPerformance} currency={accountCurrency} />
-            </div>
-          </div>
+                <div className="side-stack" id="analytics">
+                  <SymbolPerformance symbols={symbolPerformance} currency={accountCurrency} />
+                </div>
+              </div>
 
-          <p className="risk-disclaimer">{RISK_DISCLAIMER}</p>
+              <p className="risk-disclaimer">{RISK_DISCLAIMER}</p>
+            </>
+          )}
         </>
       )}
     </Shell>
@@ -276,6 +316,8 @@ export default function Dashboard() {
 }
 
 function Shell({ children, lastRefresh, accounts = [], account = null, onAccountChange }) {
+  const liveCount = accounts.filter(isLiveCollectorAccount).length;
+
   return (
     <div className="dashboard-shell">
       <aside className="sidebar">
@@ -290,9 +332,6 @@ function Shell({ children, lastRefresh, accounts = [], account = null, onAccount
           <NavItem to="/" icon={Home} label="Overview" />
           <NavItem to="/systems" icon={PackageOpen} label="Products" />
           <NavItem to="/live-results" icon={Activity} label="Live Results" />
-          <NavItem to="/live-results" icon={CalendarDays} label="Calendar" />
-          <NavItem to="/live-results" icon={LineChart} label="Trades" />
-          <NavItem to="/live-results" icon={BarChart3} label="Analytics" />
           <NavItem to="/contact" icon={ExternalLink} label="Contact" />
         </nav>
       </aside>
@@ -312,7 +351,7 @@ function Shell({ children, lastRefresh, accounts = [], account = null, onAccount
             )}
             <div className="refresh-status">
               <span className="status-dot" />
-              <span>{accounts.length ? `${accounts.length} connected` : "Waiting"}</span>
+              <span>{liveCount ? `${liveCount} MT5 live` : "MT5 waiting"}</span>
             </div>
             <button className="icon-button" type="button" title={lastRefresh ? `Updated ${lastRefresh.toLocaleTimeString()}` : "Waiting for data"}>
               <RefreshCw size={16} />
@@ -347,7 +386,7 @@ function AccountOverview({ accounts, token }) {
       <section className="empty-state">
         <Server size={34} />
         <h1>No accounts synced yet.</h1>
-        <p>The dashboard will populate as soon as the VPS collector sends real MT4 or MT5 data.</p>
+        <p>MT5 live dashboards populate after the VPS collector sends data. MT4 products use Myfxbook result links.</p>
       </section>
     );
   }
@@ -357,33 +396,107 @@ function AccountOverview({ accounts, token }) {
       <div className="dashboard-title">
         <div>
           <h1>Accounts</h1>
-          <p>Select an account to open the PnL calendar, equity curve, and trade details.</p>
+          <p>Select an MT5 account for live analytics, or open MT4 result verification via Myfxbook.</p>
         </div>
       </div>
       <div className="account-grid">
-        {accounts.map((item) => (
-          <button
-            className="account-card"
-            key={item.account_id}
-            type="button"
-            onClick={() => navigate(token ? `/share/${token}/a/${item.slug}` : `/a/${item.slug}`)}
-          >
-            <span className="account-platform">{item.platform}</span>
-            <ExternalLink size={18} />
-            <div>
-              <h2>{item.display_name || item.name}</h2>
-              <p>{item.broker || "Broker unavailable"} / {item.server || "Server unavailable"}</p>
+        {accounts.map((item) => {
+          const myfxbookOnly = isMyfxbookAccount(item);
+          return (
+            <div className="account-block" key={item.account_id}>
+              <button
+                className="account-card"
+                type="button"
+                onClick={() => navigate(token ? `/share/${token}/a/${item.slug}` : `/a/${item.slug}`)}
+              >
+                <span className={myfxbookOnly ? "account-platform account-platform-gold" : "account-platform"}>{item.platform}</span>
+                <ExternalLink size={18} />
+                <div>
+                  <h2>{item.display_name || item.name}</h2>
+                  <p>{item.broker || "Broker unavailable"} / {item.server || "Server unavailable"}</p>
+                </div>
+                {myfxbookOnly ? (
+                  <div className="result-source-note">
+                    <strong>MT4 + Myfxbook Results</strong>
+                    <span>Internal live sync is disabled for MT4 accounts.</span>
+                  </div>
+                ) : (
+                  <div className="account-card-metrics">
+                    <span>Balance <strong>{money(item.balance, item.currency)}</strong></span>
+                    <span>Equity <strong>{money(item.equity, item.currency)}</strong></span>
+                    <span>Floating <strong className={Number(item.floating_pl || 0) >= 0 ? "positive" : "negative"}>{money(item.floating_pl, item.currency)}</strong></span>
+                  </div>
+                )}
+                <small>{myfxbookOnly ? "Results via Myfxbook" : `Last sync ${relativeTime(item.last_sync_at)}`}</small>
+              </button>
+              {myfxbookOnly && <AccountMyfxbookPanel account={item} />}
             </div>
-            <div className="account-card-metrics">
-              <span>Balance <strong>{money(item.balance, item.currency)}</strong></span>
-              <span>Equity <strong>{money(item.equity, item.currency)}</strong></span>
-              <span>Floating <strong className={Number(item.floating_pl || 0) >= 0 ? "positive" : "negative"}>{money(item.floating_pl, item.currency)}</strong></span>
-            </div>
-            <small>Last sync {relativeTime(item.last_sync_at)}</small>
-          </button>
-        ))}
+          );
+        })}
       </div>
     </section>
+  );
+}
+
+function AccountMyfxbookPanel({ account }) {
+  const myfxbook = myfxbookForAccount(account);
+  if (!myfxbook) {
+    return (
+      <section className="myfxbook-panel myfxbook-panel-compact">
+        <div className="section-heading">
+          <h2>Myfxbook Verification</h2>
+        </div>
+        <div className="empty-panel mt-4">Results link coming soon.</div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="myfxbook-panel myfxbook-panel-compact">
+      <div className="section-heading">
+        <h2>Myfxbook Verification</h2>
+        <a className="mini-link" href={myfxbook.profile_url} target="_blank" rel="noreferrer">Open</a>
+      </div>
+      <div className="myfxbook-widget">
+        <div className="myfxbook-top">
+          <strong>my<span>fx</span>book</strong>
+          <small>{account.display_name || account.name}</small>
+        </div>
+        <a href={myfxbook.profile_url} target="_blank" rel="noreferrer">
+          <img src={myfxbook.widget_url || "https://widget.myfxbook.com/widget/widget.png?accountOid=12049164&type=6"} alt={`${account.display_name || account.name} Myfxbook widget`} />
+        </a>
+      </div>
+      <div className="myfxbook-meta">
+        <span>MT4 + Myfxbook Results</span>
+        <small>{myfxbook.label}</small>
+      </div>
+    </section>
+  );
+}
+
+function MyfxbookOnlyDashboard({ account }) {
+  const myfxbook = myfxbookForAccount(account);
+  return (
+    <>
+      <section className="myfxbook-only-hero">
+        <div>
+          <span className="account-platform account-platform-gold">MT4</span>
+          <h2>{account.display_name || account.name}</h2>
+          <p>
+            This MT4 account is intentionally not connected to the internal live collector. Results for MT4 systems are reviewed through Myfxbook.
+          </p>
+        </div>
+        {myfxbook ? (
+          <a className="btn-gold" href={myfxbook.profile_url} target="_blank" rel="noreferrer">
+            Open Myfxbook <ExternalLink size={16} />
+          </a>
+        ) : (
+          <span className="empty-panel">Results link coming soon</span>
+        )}
+      </section>
+      <AccountMyfxbookPanel account={account} />
+      <p className="risk-disclaimer">{RISK_DISCLAIMER}</p>
+    </>
   );
 }
 

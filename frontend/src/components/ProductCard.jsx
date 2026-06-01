@@ -6,6 +6,9 @@ import { useCart } from "@/lib/cart";
 export default function ProductCard({ product }) {
   const { addItem } = useCart();
   const navigate = useNavigate();
+  const resultSource = product.resultSource || product.result_source || (product.platform?.includes("MT4") ? "myfxbook" : "liveCollector");
+  const resultLabel = resultSource === "myfxbook" ? "MT4 + Myfxbook Results" : "MT5 + Live Results";
+  const hasResultsLink = Boolean(product.myfxbook_url);
 
   const buyNow = () => {
     addItem(product);
@@ -20,7 +23,7 @@ export default function ProductCard({ product }) {
       <div className="flex items-start gap-4 border-b border-[color:var(--color-border)] p-5">
         <div className="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-[14px] border border-[color:var(--color-border)] bg-[color:var(--color-bg)]">
           {product.logo ? (
-            <img src={product.logo} alt={`${product.name} logo`} className="h-full w-full object-cover" loading="lazy" />
+            <img src={product.logo} alt={`${product.name} logo`} className="h-full w-full object-contain" loading="lazy" />
           ) : (
             <span className="text-lg font-bold text-[color:var(--color-accent)]">TS</span>
           )}
@@ -37,7 +40,7 @@ export default function ProductCard({ product }) {
 
         <div className="mt-5 inline-flex w-fit items-center gap-2 rounded-full border border-[rgba(31,157,86,0.20)] bg-[rgba(31,157,86,0.08)] px-3 py-1 text-xs font-semibold text-[color:var(--color-success)]">
           <ShieldCheck className="h-3.5 w-3.5" />
-          Myfxbook verified results
+          {resultLabel}
         </div>
 
         <div className="mt-6 grid grid-cols-3 divide-x divide-[color:var(--color-border)] rounded-[14px] border border-[color:var(--color-border)] bg-[color:var(--color-bg)]">
@@ -64,9 +67,13 @@ export default function ProductCard({ product }) {
           </Link>
         </div>
 
-        <a href={product.myfxbook_url} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center justify-center gap-1.5 text-sm font-semibold text-[color:var(--color-success)] hover:text-[color:var(--color-text)]">
-          View Results <ExternalLink className="h-3.5 w-3.5" />
-        </a>
+        {hasResultsLink ? (
+          <a href={product.myfxbook_url} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center justify-center gap-1.5 text-sm font-semibold text-[color:var(--color-success)] hover:text-[color:var(--color-text)]">
+            View Results <ExternalLink className="h-3.5 w-3.5" />
+          </a>
+        ) : (
+          <p className="mt-3 text-center text-sm font-semibold text-[color:var(--color-muted)]">Results link coming soon</p>
+        )}
       </div>
     </article>
   );

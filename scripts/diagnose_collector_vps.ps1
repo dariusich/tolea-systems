@@ -12,10 +12,8 @@ $ErrorActionPreference = "Stop"
 $Root = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $Root
 
-$Mt4Enabled = -not $DisableMT4
-
-$env:TRADEJOURNAL_ENABLE_MT4 = if ($Mt4Enabled) { "1" } else { "0" }
-$env:TRADEJOURNAL_ENABLE_MT5 = if ($EnableMT5) { "1" } else { "0" }
+$env:TRADEJOURNAL_ENABLE_MT4 = "0"
+$env:TRADEJOURNAL_ENABLE_MT5 = "1"
 $env:TRADEJOURNAL_MT5_PATHS = $Mt5Paths
 
 if (-not (Test-Path ".venv\Scripts\python.exe")) {

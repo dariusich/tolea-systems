@@ -114,7 +114,7 @@ export default function LiveResults() {
           <div className="mt-10 rounded-2xl border border-dashed border-zinc-200 bg-zinc-50 px-8 py-16 text-center">
             <p className="text-sm font-medium text-zinc-700">No live accounts synced yet.</p>
             <p className="mt-2 text-sm text-zinc-500">
-              Start the VPS collector and this page will populate automatically from real MT4 or MT5 data.
+              Start the MT5 VPS collector to populate live analytics. MT4 systems use Myfxbook result links.
             </p>
           </div>
         )}

@@ -61,6 +61,8 @@ def test_site_products_featured_and_blog(tmp_path):
         "matrader-quickscalper",
     ]
     assert all(product["featured"] for product in featured)
+    assert all(product["price"] == 49 and product["compare_at_price"] == 250 for product in products)
+    assert all(product["resultSource"] == "myfxbook" for product in products)
     assert any(post["slug"] == "why-live-results-matter" for post in blog)
 
 
@@ -73,7 +75,10 @@ def test_site_accounts_map_real_trading_data(tmp_path):
     body = response.json()
 
     assert body["summary"]["active_systems"] == 1
+    assert body["summary"]["myfxbook_systems"] == 1
+    assert body["summary"]["live_systems"] == 0
     assert body["accounts"][0]["name"] == "DSys Beta"
+    assert body["accounts"][0]["resultSource"] == "myfxbook"
     assert body["accounts"][0]["myfxbook"]["profile_url"].endswith("/12049164")
 
     detail = client.get("/api/accounts/mt4-35115307").json()

@@ -33,7 +33,7 @@ $env:TRADEJOURNAL_HOST = $HostAddress
 $env:PORT = "$Port"
 $env:TRADEJOURNAL_DB_PATH = $DbPath
 $env:TRADEJOURNAL_ENABLE_LOCAL_COLLECTOR = "1"
-$env:TRADEJOURNAL_ENABLE_MT4 = if ($DisableMT4) { "0" } else { "1" }
+$env:TRADEJOURNAL_ENABLE_MT4 = "0"
 $env:TRADEJOURNAL_ENABLE_MT5 = if ($DisableMT5) { "0" } else { "1" }
 $env:TRADEJOURNAL_POLL_INTERVAL = "$PollInterval"
 
@@ -41,7 +41,7 @@ Write-Host "[tolea] starting site + API + collector"
 Write-Host "[tolea] URL local:  http://127.0.0.1:$Port"
 Write-Host "[tolea] URL public: http://<VPS-IP>:$Port"
 Write-Host "[tolea] DB: $DbPath"
-Write-Host "[tolea] MT4 enabled: $(-not $DisableMT4)"
+Write-Host "[tolea] MT4 live collector: disabled (MT4 results via Myfxbook only)"
 Write-Host "[tolea] MT5 enabled: $(-not $DisableMT5)"
 
 & ".venv\Scripts\python.exe" -m backend.main

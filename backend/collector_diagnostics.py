@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 
-from .mt4_bridge import collect_mt4_payloads, default_spool_paths, processed_spool_paths
 from .mt5_connector import collect_all_mt5_payloads, discover_mt5_terminals
 
 
@@ -33,25 +32,11 @@ def _print_payloads(label: str, payloads: list[dict]) -> None:
 
 
 def main() -> None:
-    enable_mt4 = _enabled("TRADEJOURNAL_ENABLE_MT4", True)
-    enable_mt5 = _enabled("TRADEJOURNAL_ENABLE_MT5", False)
+    enable_mt5 = _enabled("TRADEJOURNAL_ENABLE_MT5", True)
 
     print("[diagnose] Tolea Systems collector diagnostic")
-    print(f"[diagnose] MT4 enabled: {enable_mt4}")
+    print("[diagnose] MT4 live collector: disabled (MT4 results use Myfxbook links only)")
     print(f"[diagnose] MT5 enabled: {enable_mt5}")
-
-    if enable_mt4:
-        paths = default_spool_paths()
-        ignored_paths = processed_spool_paths()
-        print(f"[diagnose] MT4 spool files found: {len(paths)}")
-        for path in paths:
-            size = path.stat().st_size if path.exists() else 0
-            print(f"[diagnose] MT4 spool: {path} ({size} bytes)")
-        print(f"[diagnose] MT4 processed archives ignored: {len(ignored_paths)}")
-        try:
-            _print_payloads("MT4", collect_mt4_payloads(paths, consume=False))
-        except Exception as exc:
-            print(f"[diagnose] MT4 error: {exc}")
 
     if enable_mt5:
         mt5_paths = discover_mt5_terminals()

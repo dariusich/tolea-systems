@@ -18,7 +18,7 @@ export default function Marketplace() {
 
   return (
     <>
-      <PageHelmet title="Products" description="Three professional MT4 Expert Advisors with live-result verification." />
+      <PageHelmet title="Products" description="Three professional Expert Advisors with clear Myfxbook or live-result verification." />
       <main className="min-h-screen bg-[color:var(--color-bg)] text-[color:var(--color-text)]">
         <section className="border-b border-[color:var(--color-border)] bg-grid-gold">
           <div className="container-prose py-16">
@@ -31,7 +31,7 @@ export default function Marketplace() {
                 <p className="eyebrow">Products</p>
                 <h1 className="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">Tolea Systems Expert Advisors</h1>
                 <p className="mt-5 text-[15px] leading-relaxed text-[color:var(--color-muted)]">
-                  A compact product catalog with three MT4 systems, optimized set files, result links, and clear risk context.
+                  A compact product catalog with optimized set files, clear risk context, and result-source badges for Myfxbook or live MT5 analytics.
                 </p>
               </div>
               <div className="chip-success">

@@ -1,21 +1,21 @@
 # Tolea Systems
 
-Tolea Systems is a local-first MT4/MT5 trading analytics dashboard with SQLite storage, a FastAPI API, a React dashboard, and an Electron desktop wrapper.
+Tolea Systems is a local-first trading analytics dashboard with SQLite storage, a FastAPI API, a React dashboard, and an Electron desktop wrapper.
 
 It supports two modes:
 
-- **Cloud dashboard:** a lightweight collector runs on the trading VPS and pushes real account data to a separate FastAPI server.
+- **Cloud dashboard:** a lightweight MT5 collector runs on the trading VPS and pushes real account data to a separate FastAPI server. MT4 product results are shown through public Myfxbook links.
 - **Desktop/offline:** Electron starts the local backend and stores data in local SQLite.
 
-No mock data is included. Empty screens stay empty until real MT4/MT5 data is synced.
+No mock data is included. Empty MT5 live screens stay empty until real MT5 data is synced.
 
 ## Requirements
 
-- Windows for MT4/MT5 collection
+- Windows for MT5 collection
 - Python 3.11
 - Node.js 20+
 - MT5 installed and logged in for direct MT5 sync
-- MT4 with `mt4/TradeJournalBridge.mq4` installed for MT4 sync
+- MT4 product result pages use Myfxbook links instead of the internal collector
 
 ## Install
 
@@ -73,7 +73,7 @@ $env:TRADEJOURNAL_COLLECTOR_KEY="same-secret-as-server"
 python -m backend.collector
 ```
 
-For the MT4-only VPS setup, the shortest command is:
+For the VPS setup, the shortest command is:
 
 ```powershell
 cd C:\tolea-systems
@@ -88,7 +88,7 @@ For MT5, keep the MT5 terminal installed and logged in. If auto-detection misses
 $env:TRADEJOURNAL_MT5_PATHS="C:\Program Files\Your Broker MT5\terminal64.exe"
 ```
 
-For MT4, copy `mt4/TradeJournalBridge.mq4` into the MT4 `MQL4/Experts` folder, compile it in MetaEditor, attach it to one chart, and allow file operations. It writes to the MetaTrader Common Files folder; the collector reads that spool automatically.
+MT4 live collector sync is disabled. For MT4 products, connect or review the public Myfxbook result link instead.
 
 ## Create A Read-Only Link
 

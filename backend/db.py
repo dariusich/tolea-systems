@@ -43,6 +43,14 @@ ACCOUNT_DISPLAY_NAMES = {
     ("MT5", "77045247"): "DSys Alpha",
 }
 
+MYFXBOOK_BY_ACCOUNT = {
+    ("MT4", "35115307"): {
+        "profile_url": "https://www.myfxbook.com/members/dariusch/dsys-beta/12049164",
+        "widget_url": "https://widget.myfxbook.com/widget/widget.png?accountOid=12049164&type=6",
+        "label": "DSys Beta verified profile",
+    },
+}
+
 
 def preferred_account_display_name(account: dict[str, Any]) -> str | None:
     platform = str(account.get("platform") or "").upper()
@@ -56,6 +64,23 @@ def preferred_account_slug(account: dict[str, Any]) -> str | None:
     if preferred_account_display_name(account) and platform and login:
         return f"{platform}-{login}"
     return None
+
+
+def account_result_source(account: dict[str, Any]) -> str:
+    platform = str(account.get("platform") or "").upper()
+    return "myfxbook" if platform == "MT4" else "liveCollector"
+
+
+def with_result_metadata(account: dict[str, Any]) -> dict[str, Any]:
+    platform = str(account.get("platform") or "").upper()
+    login = str(account.get("login") or "")
+    result_source = account_result_source(account)
+    account["result_source"] = result_source
+    account["resultSource"] = result_source
+    account["results_label"] = "Myfxbook Results" if result_source == "myfxbook" else "Live Results"
+    if (platform, login) in MYFXBOOK_BY_ACCOUNT:
+        account["myfxbook"] = MYFXBOOK_BY_ACCOUNT[(platform, login)]
+    return account
 
 
 def connect(path: Path | None = None) -> sqlite3.Connection:
@@ -338,7 +363,7 @@ def merge_snapshot(conn: sqlite3.Connection, account: dict[str, Any]) -> dict[st
     snapshot = latest_snapshot(conn, account["account_id"])
     if snapshot:
         account.update(snapshot)
-    return account
+    return with_result_metadata(account)
 
 
 def list_accounts(account_ids: list[str] | None = None, include_hidden: bool = False) -> list[dict[str, Any]]:

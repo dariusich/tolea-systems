@@ -155,6 +155,7 @@ def _site_account(account: dict[str, Any]) -> dict[str, Any]:
     drawdown = max([_num(point.get("drawdown")) for point in chart], default=0.0)
     display_name = account.get("display_name") or account.get("name") or f"{account.get('platform')} {account.get('login')}"
     product_slug = _account_product_slug(account)
+    result_source = db.account_result_source(account)
 
     result = {
         "id": account_id,
@@ -165,6 +166,9 @@ def _site_account(account: dict[str, Any]) -> dict[str, Any]:
         "server": account.get("server"),
         "platform": account.get("platform"),
         "login": account.get("login"),
+        "resultSource": result_source,
+        "result_source": result_source,
+        "results_label": "Myfxbook Results" if result_source == "myfxbook" else "Live Results",
         "currency": account.get("currency") or "USD",
         "system_name": display_name,
         "system_slug": product_slug,
@@ -185,6 +189,7 @@ def _site_account(account: dict[str, Any]) -> dict[str, Any]:
     if str(account.get("platform")).upper() == "MT4" and str(account.get("login")) == "35115307":
         result["myfxbook"] = {
             "profile_url": MYFXBOOK_DSYS_BETA,
+            "widget_url": "https://widget.myfxbook.com/widget/widget.png?accountOid=12049164&type=6",
             "label": "DSys Beta verified profile",
         }
     return result
@@ -193,6 +198,8 @@ def _site_account(account: dict[str, Any]) -> dict[str, Any]:
 def _accounts_payload() -> dict[str, Any]:
     accounts = [_site_account(account) for account in db.list_accounts()]
     active = len(accounts)
+    live = len([account for account in accounts if account.get("resultSource") == "liveCollector"])
+    myfxbook = len([account for account in accounts if account.get("resultSource") == "myfxbook"])
     total_profit = round(sum(_num(account.get("total_profit")) for account in accounts), 2)
     avg_monthly = round(sum(_num(account.get("monthly_gain")) for account in accounts) / active, 2) if active else 0.0
     avg_total = round(sum(_num(account.get("total_gain")) for account in accounts) / active, 2) if active else 0.0
@@ -201,6 +208,8 @@ def _accounts_payload() -> dict[str, Any]:
         "accounts": accounts,
         "summary": {
             "active_systems": active,
+            "live_systems": live,
+            "myfxbook_systems": myfxbook,
             "avg_monthly_gain": avg_monthly,
             "avg_total_gain": avg_total,
             "max_drawdown": max_drawdown,

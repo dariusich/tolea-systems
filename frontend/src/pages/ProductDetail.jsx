@@ -10,6 +10,14 @@ import ProductCard from "@/components/ProductCard";
 const DISCLAIMER = "Trading involves risk. Past performance does not guarantee future results. Expert Advisors can generate drawdown, especially in volatile market conditions. Use proper risk management.";
 const OPTIMIZATION_NOTE = "At Tolea Systems, we do not simply resell the EA. We test, adjust and optimize the set files for each product in order to reduce drawdown as much as possible and keep the strategy cleaner, safer and more stable. Each client receives the information needed to put the EA into practice, together with custom set files for multiple risk profiles.";
 
+function productResultSource(product) {
+  return product?.resultSource || product?.result_source || (product?.platform?.includes("MT4") ? "myfxbook" : "liveCollector");
+}
+
+function productResultLabel(product) {
+  return productResultSource(product) === "myfxbook" ? "MT4 + Myfxbook Results" : "MT5 + Live Results";
+}
+
 export default function ProductDetail() {
   const { slug } = useParams();
   const { addItem } = useCart();
@@ -62,7 +70,7 @@ export default function ProductDetail() {
                   </div>
                   <div className="chip-success self-start">
                     <ShieldCheck className="h-4 w-4" />
-                    Myfxbook results
+                    {productResultLabel(product)}
                   </div>
                 </div>
 
@@ -150,7 +158,7 @@ function ProductPurchasePanel({ product, onBuy }) {
   return (
     <section className="overflow-hidden rounded-[14px] border border-[color:var(--color-border)] bg-white">
       <div className="grid place-items-center border-b border-[color:var(--color-border)] bg-[color:var(--color-bg)] p-6">
-        <img src={product.logo || product.image} alt={`${product.name} logo`} className="h-40 w-40 rounded-[14px] object-cover" />
+        <img src={product.logo || product.image} alt={`${product.name} logo`} className="h-40 w-40 rounded-[14px] object-contain" />
       </div>
       <div className="p-5">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--color-dim)]">Limited offer</p>
@@ -162,11 +170,18 @@ function ProductPurchasePanel({ product, onBuy }) {
         <button type="button" onClick={onBuy} className="btn-gold mt-5 w-full" data-testid={`product-buy-${product.slug}`}>
           Buy Now <ShoppingCart className="h-4 w-4" />
         </button>
-        <a href={product.myfxbook_url} target="_blank" rel="noreferrer" className="btn-ghost-gold mt-3 w-full">
-          View Results <ArrowUpRight className="h-4 w-4" />
-        </a>
+        {product.myfxbook_url ? (
+          <a href={product.myfxbook_url} target="_blank" rel="noreferrer" className="btn-ghost-gold mt-3 w-full">
+            View Results <ArrowUpRight className="h-4 w-4" />
+          </a>
+        ) : (
+          <p className="mt-3 rounded-[10px] border border-[color:var(--color-border)] bg-[color:var(--color-bg)] px-3 py-2 text-center text-sm font-semibold text-[color:var(--color-muted)]">
+            Results link coming soon
+          </p>
+        )}
         <dl className="mt-5 divide-y divide-[color:var(--color-border)] border-y border-[color:var(--color-border)] text-sm">
           <Spec label="Platform" value={product.platform?.join(" / ")} />
+          <Spec label="Results" value={productResultLabel(product)} />
           <Spec label="Symbol" value={product.symbols?.join(", ")} />
           <Spec label="Timeframe" value={product.timeframe} />
           <Spec label="Min balance" value={product.min_deposit ? money(product.min_deposit) : "Broker dependent"} />
@@ -227,12 +242,24 @@ function FeatureList({ items }) {
 }
 
 function MyfxbookResultCard({ product }) {
+  if (!product.myfxbook_url) {
+    return (
+      <section className="rounded-[14px] border border-[color:var(--color-border)] bg-white p-6">
+        <p className="eyebrow">Results</p>
+        <h2 className="mt-2 text-xl font-bold tracking-tight">Results link coming soon</h2>
+        <p className="mt-3 text-[15px] leading-relaxed text-[color:var(--color-muted)]">
+          This product does not have a public Myfxbook link connected yet.
+        </p>
+      </section>
+    );
+  }
+
   return (
     <section className="rounded-[14px] border border-[color:var(--color-border)] bg-white p-6">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="eyebrow">Live verification</p>
-          <h2 className="mt-2 text-xl font-bold tracking-tight">Myfxbook results</h2>
+          <p className="eyebrow">Results source</p>
+          <h2 className="mt-2 text-xl font-bold tracking-tight">{productResultLabel(product)}</h2>
         </div>
         <ShieldCheck className="h-5 w-5 text-[color:var(--color-success)]" />
       </div>

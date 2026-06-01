@@ -81,9 +81,6 @@ $argsList = @(
   "-NoInstall"
 )
 
-if ($DisableMT4) {
-  $argsList += "-DisableMT4"
-}
 if ($DisableMT5) {
   $argsList += "-DisableMT5"
 }

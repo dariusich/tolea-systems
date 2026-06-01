@@ -84,6 +84,7 @@ PRODUCTS: list[dict[str, Any]] = [
         "symbols": ["XAUUSD"],
         "timeframe": "M1",
         "platform": ["MT4"],
+        "resultSource": "myfxbook",
         "min_deposit": 150,
         "recommended_leverage": "1:500+",
         "risk_level": "Moderate",
@@ -100,10 +101,10 @@ PRODUCTS: list[dict[str, Any]] = [
         "myfxbook_url": "https://www.myfxbook.com/portfolio/matrader-ai/12049485",
         "myfxbook_widget_url": "https://widget.myfxbook.com/widget/widget.png?accountOid=12049485&type=6",
         "logo": "/assets/products/aurix/aurix-neural-edge-logo-200x200-6931.png",
-        "image": "/assets/products/aurix/aurix-neural-edge-screen-2217-preview.jpg",
+        "image": "/assets/products/aurix/aurix-neural-edge-screen-2217.png",
         "gallery": [
             "/assets/products/aurix/aurix-neural-edge-screen-2023.png",
-            "/assets/products/aurix/aurix-neural-edge-screen-2217-preview.jpg",
+            "/assets/products/aurix/aurix-neural-edge-screen-2217.png",
             "/assets/products/aurix/aurix-neural-edge-screen-2595.png",
             "/assets/products/aurix/aurix-neural-edge-screen-3946.png",
         ],
@@ -167,6 +168,7 @@ PRODUCTS: list[dict[str, Any]] = [
         "symbols": ["XAUUSD"],
         "timeframe": "M1",
         "platform": ["MT4"],
+        "resultSource": "myfxbook",
         "min_deposit": 200,
         "recommended_leverage": "1:2000",
         "risk_level": "Moderate",
@@ -183,8 +185,17 @@ PRODUCTS: list[dict[str, Any]] = [
         "myfxbook_url": "https://www.myfxbook.com/portfolio/matrader/12039419",
         "myfxbook_widget_url": "https://widget.myfxbook.com/widget/widget.png?accountOid=12039419&type=6",
         "logo": "/assets/products/matrader-ai/matraderea-logo-200x200-5739.png",
-        "image": "/assets/products/matrader-ai/matraderea-logo-200x200-5739.png",
-        "gallery": [],
+        "image": "/assets/products/matrader-ai/matraderea-screen-3984.png",
+        "gallery": [
+            "/assets/products/matrader-ai/matraderea-screen-3984.png",
+            "/assets/products/matrader-ai/matrader-ai-screen-8182.png",
+            "/assets/products/matrader-ai/matrader-ai-screen-7127.png",
+            "/assets/products/matrader-ai/matrader-ai-screen-7580.png",
+            "/assets/products/matrader-ai/matraderea-screen-6963.png",
+            "/assets/products/matrader-ai/matraderea-screen-7285.png",
+            "/assets/products/matrader-ai/matraderea-screen-8156.png",
+            "/assets/products/matrader-ai/matraderea-screen-8712.png",
+        ],
     },
     {
         "slug": "matrader-quickscalper",
@@ -243,6 +254,7 @@ PRODUCTS: list[dict[str, Any]] = [
         "symbols": ["XAUUSD"],
         "timeframe": "Scalping setup",
         "platform": ["MT4"],
+        "resultSource": "myfxbook",
         "min_deposit": 200,
         "recommended_leverage": "1:500+",
         "risk_level": "Moderate",
@@ -259,12 +271,12 @@ PRODUCTS: list[dict[str, Any]] = [
         "myfxbook_url": "https://www.myfxbook.com/portfolio/dsys-beta/12049164",
         "myfxbook_widget_url": "https://widget.myfxbook.com/widget/widget.png?accountOid=12049164&type=6",
         "logo": "/assets/products/quickscalper/matrader-quickscalper-logo-200x200-4159.png",
-        "image": "/assets/products/quickscalper/matrader-quickscalper-screen-4323-preview.jpg",
+        "image": "/assets/products/quickscalper/matrader-quickscalper-screen-4323.png",
         "gallery": [
             "/assets/products/quickscalper/matrader-quickscalper-screen-2320.png",
-            "/assets/products/quickscalper/matrader-quickscalper-screen-4323-preview.jpg",
+            "/assets/products/quickscalper/matrader-quickscalper-screen-4323.png",
             "/assets/products/quickscalper/matrader-quickscalper-screen-5743.png",
-            "/assets/products/quickscalper/matrader-quickscalper-screen-7093-preview.jpg",
+            "/assets/products/quickscalper/matrader-quickscalper-screen-7093.png",
         ],
     },
 ]
@@ -285,9 +297,9 @@ BLOG_POSTS: list[dict[str, Any]] = [
         "content": (
             "Screenshots are easy to polish and hard to audit. A live results page changes the conversation "
             "because closed trades, equity, drawdown, and daily PnL can be checked over time.\n\n"
-            "Tolea Systems keeps the collector separate from the public server: the VPS reads MT4 or MT5, "
-            "then pushes closed-trade deltas to the API. That keeps the trading machine light while the "
-            "website remains easy to share."
+            "Tolea Systems keeps the collector separate from the public server. MT5 accounts can push "
+            "closed-trade deltas to the API, while MT4 product results are reviewed through public "
+            "Myfxbook links. That keeps the trading machine light while the website remains easy to share."
         ),
         "category": "Transparency",
         "author": "Tolea Systems",
@@ -297,14 +309,15 @@ BLOG_POSTS: list[dict[str, Any]] = [
         "cover": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=85",
     },
     {
-        "slug": "mt4-mt5-collector-design",
-        "title": "The MT4 and MT5 collector design",
-        "excerpt": "How a lightweight VPS collector syncs broker data without running the full dashboard beside your terminals.",
+        "slug": "mt5-collector-myfxbook-design",
+        "title": "MT5 live collector and MT4 Myfxbook results",
+        "excerpt": "How Tolea separates internal live MT5 analytics from public Myfxbook verification for MT4 systems.",
         "content": (
-            "The collector is intentionally small. MT4 writes a Common Files spool through the bridge EA, "
-            "while MT5 is read through the official Python package from a logged-in terminal session.\n\n"
-            "If the Render API is offline, the collector queues locally in SQLite and retries. The central "
-            "database deduplicates by account id and ticket, so different brokers can reuse ticket numbers safely."
+            "The collector is intentionally small and focused on MT5. It reads a logged-in MT5 terminal "
+            "through the official Python package and sends closed-trade deltas to the API.\n\n"
+            "MT4 products are no longer synced through the internal collector. Their public performance "
+            "context comes from Myfxbook links, which keeps the MT4 side simple and avoids mixing two "
+            "different result sources in the same live dashboard."
         ),
         "category": "Engineering",
         "author": "Tolea Systems",

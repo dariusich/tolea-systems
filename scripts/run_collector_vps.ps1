@@ -22,10 +22,9 @@ Set-Location $Root
 
 $env:TRADEJOURNAL_SERVER_URL = $ServerUrl.TrimEnd("/")
 $env:TRADEJOURNAL_COLLECTOR_KEY = $CollectorKey
-$Mt4Enabled = -not $DisableMT4
 
-$env:TRADEJOURNAL_ENABLE_MT4 = if ($Mt4Enabled) { "1" } else { "0" }
-$env:TRADEJOURNAL_ENABLE_MT5 = if ($EnableMT5) { "1" } else { "0" }
+$env:TRADEJOURNAL_ENABLE_MT4 = "0"
+$env:TRADEJOURNAL_ENABLE_MT5 = "1"
 $env:TRADEJOURNAL_MT5_PATHS = $Mt5Paths
 $env:TRADEJOURNAL_POLL_INTERVAL = "$PollInterval"
 
@@ -40,9 +39,9 @@ if (-not (Test-Path ".venv\Scripts\python.exe")) {
 & ".venv\Scripts\python.exe" -m pip install -r requirements-collector.txt
 
 Write-Host "[collector] Server: $($env:TRADEJOURNAL_SERVER_URL)"
-Write-Host "[collector] MT4 enabled: $Mt4Enabled"
-Write-Host "[collector] MT5 enabled: $($EnableMT5.IsPresent)"
-if ($EnableMT5 -and $Mt5Paths) {
+Write-Host "[collector] MT4 live collector: disabled (MT4 results via Myfxbook only)"
+Write-Host "[collector] MT5 enabled: True"
+if ($Mt5Paths) {
   Write-Host "[collector] Manual MT5 paths: $Mt5Paths"
 }
 Write-Host "[collector] Poll interval: $PollInterval seconds"
