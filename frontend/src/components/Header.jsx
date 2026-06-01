@@ -34,9 +34,6 @@ export default function Header() {
           <NavLink to="/live-results" data-testid={TID.navLiveResults} className={navLink}>
             Live Results
           </NavLink>
-          <NavLink to="/live-results#calendar" className={navLink}>Calendar</NavLink>
-          <NavLink to="/live-results#trades" className={navLink}>Trades</NavLink>
-          <NavLink to="/live-results#analytics" className={navLink}>Analytics</NavLink>
           <NavLink to="/contact" className={navLink}>Contact</NavLink>
         </nav>
 
@@ -110,9 +107,6 @@ export default function Header() {
             <NavLink to="/" onClick={() => setOpen(false)} className={navLink}>Overview</NavLink>
             <NavLink to="/systems" onClick={() => setOpen(false)} className={navLink}>Products</NavLink>
             <NavLink to="/live-results" onClick={() => setOpen(false)} className={navLink}>Live Results</NavLink>
-            <NavLink to="/live-results#calendar" onClick={() => setOpen(false)} className={navLink}>Calendar</NavLink>
-            <NavLink to="/live-results#trades" onClick={() => setOpen(false)} className={navLink}>Trades</NavLink>
-            <NavLink to="/live-results#analytics" onClick={() => setOpen(false)} className={navLink}>Analytics</NavLink>
             <NavLink to="/contact" onClick={() => setOpen(false)} className={navLink}>Contact</NavLink>
             <NavLink to="/cart" onClick={() => setOpen(false)} className={navLink}>Cart ({count})</NavLink>
             {user ? (

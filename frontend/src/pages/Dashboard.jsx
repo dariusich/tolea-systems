@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { api } from "@/lib/api";
 import { tradeApi } from "../api.js";
 import CalendarPnL from "../components/CalendarPnL.jsx";
 import EquityCurve from "../components/EquityCurve.jsx";
@@ -89,6 +90,7 @@ export default function Dashboard() {
   const [tradesByDay, setTradesByDay] = useState({});
   const [equity, setEquity] = useState([]);
   const [trades, setTrades] = useState([]);
+  const [products, setProducts] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [loadingAccounts, setLoadingAccounts] = useState(true);
   const [loadingAccount, setLoadingAccount] = useState(false);
@@ -97,6 +99,7 @@ export default function Dashboard() {
 
   const isShareHub = Boolean(token && !slug && location.pathname.startsWith("/share"));
   const isAccountsHub = location.pathname === "/accounts" || isShareHub;
+  const isLiveResultsHub = location.pathname === "/live-results" && !slug && !token;
   const activeSlug = slug || selectedSlug;
 
   const accountPath = useCallback(
@@ -115,11 +118,11 @@ export default function Dashboard() {
     setLastRefresh(new Date());
     setSelectedSlug((current) => {
       if (slug) return slug;
-      if (isAccountsHub) return null;
+      if (isAccountsHub || isLiveResultsHub) return null;
       if (current && nextAccounts.some((item) => item.slug === current)) return current;
       return nextAccounts[0]?.slug || null;
     });
-  }, [isAccountsHub, slug, token]);
+  }, [isAccountsHub, isLiveResultsHub, slug, token]);
 
   useEffect(() => {
     let active = true;
@@ -146,7 +149,7 @@ export default function Dashboard() {
   }, [loadAccounts]);
 
   useEffect(() => {
-    if (!activeSlug || isAccountsHub) {
+    if (!activeSlug || isAccountsHub || isLiveResultsHub) {
       setAccount(null);
       setStats(null);
       setDays([]);
@@ -201,7 +204,23 @@ export default function Dashboard() {
       active = false;
       clearInterval(interval);
     };
-  }, [activeSlug, isAccountsHub, token]);
+  }, [activeSlug, isAccountsHub, isLiveResultsHub, token]);
+
+  useEffect(() => {
+    if (!isLiveResultsHub) return;
+    let active = true;
+    api
+      .get("/products")
+      .then(({ data }) => {
+        if (active) setProducts(data.products || []);
+      })
+      .catch(() => {
+        if (active) setProducts([]);
+      });
+    return () => {
+      active = false;
+    };
+  }, [isLiveResultsHub]);
 
   const accountCurrency = account?.currency || "USD";
   const selectedTrades = useMemo(() => {
@@ -237,6 +256,14 @@ export default function Dashboard() {
     return (
       <Shell lastRefresh={lastRefresh} accounts={accounts} account={account} onAccountChange={handleAccountChange}>
         <AccountOverview accounts={accounts} token={token} />
+      </Shell>
+    );
+  }
+
+  if (isLiveResultsHub) {
+    return (
+      <Shell lastRefresh={lastRefresh} accounts={accounts} account={account} onAccountChange={handleAccountChange}>
+        <LiveResultsHub products={products} accounts={accounts} />
       </Shell>
     );
   }
@@ -436,6 +463,106 @@ function AccountOverview({ accounts, token }) {
       </div>
     </section>
   );
+}
+
+function LiveResultsHub({ products, accounts }) {
+  const visibleProducts = products.length ? products.slice(0, 3) : [];
+
+  return (
+    <section className="live-results-hub">
+      <div className="dashboard-title live-results-title">
+        <div>
+          <h1>Live Results</h1>
+          <p>Verified result cards for each system. MT4 uses Myfxbook, while MT5 live accounts can open the internal dashboard.</p>
+        </div>
+        <Link className="soft-link" to="/systems">View Products</Link>
+      </div>
+
+      {visibleProducts.length ? (
+        <div className="live-results-grid">
+          {visibleProducts.map((product) => (
+            <LiveResultCard key={product.slug} product={product} account={accountForProduct(product, accounts)} />
+          ))}
+        </div>
+      ) : (
+        <section className="empty-state">
+          <PackageOpen size={34} />
+          <h1>Results are loading.</h1>
+          <p>The product result cards will appear as soon as the site API responds.</p>
+        </section>
+      )}
+
+      <p className="risk-disclaimer">{RISK_DISCLAIMER}</p>
+    </section>
+  );
+}
+
+function LiveResultCard({ product, account }) {
+  const platform = (product.platform || [account?.platform]).filter(Boolean).join(" / ") || "MetaTrader";
+  const source = product.resultSource || accountResultSource(account);
+  const sourceLabel = source === "liveCollector" ? "Live Results" : "Myfxbook Results";
+  const liveAccount = account && isLiveCollectorAccount(account);
+  const profileUrl = product.myfxbook_url || account?.myfxbook?.profile_url;
+  const widgetUrl = product.myfxbook_widget_url || account?.myfxbook?.widget_url;
+
+  return (
+    <article className="live-result-card">
+      <div className="live-result-card-head">
+        <div className="live-result-logo-wrap">
+          {product.logo ? <img src={product.logo} alt={`${product.name} logo`} /> : <PackageOpen size={24} />}
+        </div>
+        <div>
+          <span className="account-platform account-platform-gold">{platform} + {sourceLabel}</span>
+          <h2>{product.result_account_name || product.name}</h2>
+          <p>{product.tagline}</p>
+        </div>
+      </div>
+
+      <div className="live-result-meta">
+        <span>System <strong>{product.name}</strong></span>
+        <span>Source <strong>{sourceLabel}</strong></span>
+        {account && <span>Account <strong>{account.display_name || account.name || account.login}</strong></span>}
+      </div>
+
+      {widgetUrl ? (
+        <a className="live-result-widget" href={profileUrl || widgetUrl} target="_blank" rel="noreferrer">
+          <img src={widgetUrl} alt={`${product.name} Myfxbook widget`} />
+        </a>
+      ) : (
+        <div className="empty-panel">Results link coming soon.</div>
+      )}
+
+      <div className="live-result-actions">
+        {profileUrl ? (
+          <a className="btn-gold" href={profileUrl} target="_blank" rel="noreferrer">
+            Open Myfxbook <ExternalLink size={15} />
+          </a>
+        ) : (
+          <span className="btn-ghost-gold live-result-disabled">Myfxbook coming soon</span>
+        )}
+        {liveAccount && <Link className="btn-ghost-gold" to={`/live-results/a/${account.slug}`}>Open MT5 dashboard</Link>}
+        <Link className="btn-ghost-gold" to={`/systems/${product.slug}`}>Product details</Link>
+      </div>
+    </article>
+  );
+}
+
+function accountForProduct(product, accounts) {
+  if (!accounts?.length) return null;
+  const slug = product.slug;
+  if (slug === "matrader-quickscalper") {
+    return accounts.find((item) => item.slug === "mt4-35115307" || String(item.login) === "35115307") || null;
+  }
+  if (slug === "aurix-neural-edge-ai") {
+    return (
+      accounts.find((item) => item.system_slug === slug || String(item.login) === "77045247" || /aurix/i.test(item.display_name || item.name || "")) ||
+      null
+    );
+  }
+  if (slug === "matrader-ai") {
+    return accounts.find((item) => item.system_slug === slug || /matrader/i.test(item.display_name || item.name || "")) || null;
+  }
+  return accounts.find((item) => item.system_slug === slug) || null;
 }
 
 function AccountMyfxbookPanel({ account }) {

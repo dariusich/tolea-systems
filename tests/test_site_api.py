@@ -63,6 +63,10 @@ def test_site_products_featured_and_blog(tmp_path):
     assert all(product["featured"] for product in featured)
     assert all(product["price"] == 49 and product["compare_at_price"] == 250 for product in products)
     assert all(product["resultSource"] == "myfxbook" for product in products)
+    by_slug = {product["slug"]: product for product in products}
+    assert by_slug["aurix-neural-edge-ai"]["myfxbook_widget_url"].endswith("accountOid=12060369&type=6")
+    assert by_slug["matrader-ai"]["myfxbook_url"] == "https://www.myfxbook.com/members/dariusch/matrader/12039419"
+    assert by_slug["matrader-quickscalper"]["myfxbook_url"] == "https://www.myfxbook.com/members/dariusch/dsys-beta/12049164"
     assert any(post["slug"] == "why-live-results-matter" for post in blog)
 
 

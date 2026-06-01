@@ -82,18 +82,20 @@ export default function Home() {
         <section className="overview-hero">
           <div className="overview-hero-inner">
             <div className="overview-hero-copy fade-up">
-              <BrandLogo className="mb-8 max-w-[310px]" />
-              <p className="overview-badge">
-                <BadgeCheck className="h-4 w-4" />
-                Optimized Expert Advisors for MetaTrader 4/5
-              </p>
-              <h1 className="mt-9 max-w-3xl text-[clamp(3.1rem,6.2vw,5.9rem)] font-black leading-[0.98] tracking-[0]">
+              <div className="overview-hero-kicker">
+                <BrandLogo className="max-w-[188px] md:max-w-[214px]" />
+                <p className="overview-badge">
+                  <BadgeCheck className="h-4 w-4" />
+                  Optimized Expert Advisors for MetaTrader 4/5
+                </p>
+              </div>
+              <h1 className="mt-8 max-w-[680px] text-[clamp(2.7rem,4.7vw,4.55rem)] font-black leading-[1.08] tracking-[0]">
                 Clean automated trading systems with <span className="gold-gradient-text">verified results.</span>
               </h1>
-              <p className="mt-7 max-w-2xl text-[17px] leading-8 text-[color:var(--color-muted)] md:text-[19px]">
+              <p className="mt-6 max-w-[580px] text-[16px] leading-7 text-[color:var(--color-muted)] md:text-[18px]">
                 A focused catalog of gold trading systems delivered with custom set files, setup guidance, and transparent public result links before you use them.
               </p>
-              <div className="mt-9 flex flex-wrap gap-4">
+              <div className="mt-7 flex flex-wrap gap-4">
                 <Link className="home-primary-cta" to="/systems">
                   View Products <ArrowRight className="h-4 w-4" />
                 </Link>
@@ -101,7 +103,7 @@ export default function Home() {
                   Live Results <LineChart className="h-4 w-4" />
                 </Link>
               </div>
-              <p className="mt-7 flex items-center gap-3 text-sm font-medium text-[color:var(--color-muted)]">
+              <p className="mt-6 flex items-center gap-3 text-sm font-medium text-[color:var(--color-muted)]">
                 <span className="h-2.5 w-2.5 rounded-full bg-[color:var(--color-success)] shadow-[0_0_0_5px_rgba(22,163,74,0.12)]" />
                 MT5 live data appears as soon as the VPS collector syncs. MT4 results are verified via Myfxbook.
               </p>
@@ -188,7 +190,7 @@ function ResultsPreview({ account, trades, bestDay, loading }) {
       <div className="flex items-center justify-between gap-4">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.24em] text-[color:var(--color-dim)]">Live trading proof</p>
-          <h2 className="mt-2 text-2xl font-black tracking-[0]">Results preview</h2>
+          <h2 className="mt-2 text-[1.35rem] font-black tracking-[0]">Results preview</h2>
         </div>
         <span className={connected ? "chip-success" : "chip-waiting"}>
           <span className="h-2 w-2 rounded-full bg-current" />
@@ -196,24 +198,24 @@ function ResultsPreview({ account, trades, bestDay, loading }) {
         </span>
       </div>
 
-      <div className="mt-7 grid gap-3 sm:grid-cols-2">
+      <div className="mt-5 grid gap-3 sm:grid-cols-2">
         <ResultPreviewCard label="Total Profit" value={totalProfit} sublabel={connected ? "Closed MT5 PnL" : "Waiting for MT5"} tone="profit" />
         <ResultPreviewCard label="Win Rate" value={winRate} sublabel={connected ? "Average" : "No live account"} />
         <ResultPreviewCard label="Total Trades" value={totalTrades} sublabel={connected ? "All time" : "No trades yet"} />
         <ResultPreviewCard label="Best Day" value={bestDayValue} sublabel={bestDay?.[0] || "No day selected"} tone="profit" />
       </div>
 
-      <div className="mt-5 rounded-[18px] border border-[color:var(--color-border)] bg-white p-4">
+      <div className="mt-4 rounded-[18px] border border-[color:var(--color-border)] bg-white p-4">
         <div className="flex items-center justify-between gap-3">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-[color:var(--color-muted)]">Equity Curve</p>
           <span className="rounded-[10px] border border-[color:var(--color-border)] px-3 py-1 text-xs font-semibold text-[color:var(--color-muted)]">All time</span>
         </div>
         {chart.length ? (
           <div className="mt-4">
-            <EquityChart data={chart} height={230} />
+            <EquityChart data={chart} height={190} />
           </div>
         ) : (
-          <div className="mt-4 grid h-[230px] place-items-center rounded-[14px] border border-dashed border-[color:var(--color-border-strong)] bg-[color:var(--color-bg)] text-center">
+          <div className="mt-4 grid h-[190px] place-items-center rounded-[14px] border border-dashed border-[color:var(--color-border-strong)] bg-[color:var(--color-bg)] text-center">
             <div>
               <LineChart className="mx-auto h-7 w-7 text-[color:var(--color-accent)]" />
               <p className="mt-3 text-sm font-bold text-[color:var(--color-text)]">Waiting for MT5 live data</p>
@@ -231,9 +233,9 @@ function ResultsPreview({ account, trades, bestDay, loading }) {
 function ResultPreviewCard({ label, value, sublabel, tone }) {
   const cls = tone === "profit" ? "text-[color:var(--color-success)]" : tone === "loss" ? "text-[color:var(--color-danger)]" : "text-[color:var(--color-text)]";
   return (
-    <div className="rounded-[16px] border border-[color:var(--color-border)] bg-white p-5 shadow-[0_14px_34px_rgba(15,23,42,0.045)] transition hover:-translate-y-0.5 hover:border-[color:var(--color-accent)]">
+    <div className="rounded-[16px] border border-[color:var(--color-border)] bg-white p-4 shadow-[0_14px_34px_rgba(15,23,42,0.045)] transition hover:-translate-y-0.5 hover:border-[color:var(--color-accent)]">
       <p className="text-xs font-bold uppercase tracking-[0.16em] text-[color:var(--color-dim)]">{label}</p>
-      <p className={`mt-2 text-2xl font-black ${cls}`}>{value}</p>
+      <p className={`mt-2 text-[1.45rem] font-black ${cls}`}>{value}</p>
       <p className="mt-1 text-sm font-medium text-[color:var(--color-muted)]">{sublabel}</p>
     </div>
   );
@@ -243,7 +245,7 @@ function StepItem({ icon: Icon, number, title, text }) {
   return (
     <article className="overview-step-card">
       <span className="overview-step-icon">
-        <Icon className="h-7 w-7" />
+        <Icon className="h-6 w-6" />
       </span>
       <div>
         <p className="text-sm font-black text-[color:var(--color-accent)]">{number}</p>

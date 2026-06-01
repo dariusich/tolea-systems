@@ -22,8 +22,7 @@ export default function Footer() {
           ]} />
           <FooterCol title="Resources" links={[
             ["Overview", "/"],
-            ["Calendar", "/live-results#calendar"],
-            ["Trades", "/live-results#trades"],
+            ["Blog", "/blog"],
             ["Sign in", "/login"],
           ]} />
         </div>

@@ -98,8 +98,9 @@ PRODUCTS: list[dict[str, Any]] = [
         "compare_at_price": 250,
         "featured": True,
         "mql5_url": "https://www.mql5.com/en/market/product/174228",
-        "myfxbook_url": "https://www.myfxbook.com/portfolio/matrader-ai/12049485",
-        "myfxbook_widget_url": "https://widget.myfxbook.com/widget/widget.png?accountOid=12049485&type=6",
+        "myfxbook_url": "https://www.myfxbook.com/members/dariusch/aurix/12060369",
+        "myfxbook_widget_url": "https://widget.myfxbook.com/widget/widget.png?accountOid=12060369&type=6",
+        "result_account_name": "AURIX",
         "logo": "/assets/products/aurix/aurix-neural-edge-logo-200x200-6931.png",
         "image": "/assets/products/aurix/aurix-neural-edge-screen-2217.png",
         "gallery": [
@@ -182,8 +183,9 @@ PRODUCTS: list[dict[str, Any]] = [
         "compare_at_price": 250,
         "featured": True,
         "mql5_url": "https://www.mql5.com/en/market/product/147979",
-        "myfxbook_url": "https://www.myfxbook.com/portfolio/matrader/12039419",
+        "myfxbook_url": "https://www.myfxbook.com/members/dariusch/matrader/12039419",
         "myfxbook_widget_url": "https://widget.myfxbook.com/widget/widget.png?accountOid=12039419&type=6",
+        "result_account_name": "MATrader",
         "logo": "/assets/products/matrader-ai/matraderea-logo-200x200-5739.png",
         "image": "/assets/products/matrader-ai/matraderea-screen-3984.png",
         "gallery": [
@@ -268,8 +270,9 @@ PRODUCTS: list[dict[str, Any]] = [
         "compare_at_price": 250,
         "featured": True,
         "mql5_url": "https://www.mql5.com/en/market/product/158178",
-        "myfxbook_url": "https://www.myfxbook.com/portfolio/dsys-beta/12049164",
+        "myfxbook_url": "https://www.myfxbook.com/members/dariusch/dsys-beta/12049164",
         "myfxbook_widget_url": "https://widget.myfxbook.com/widget/widget.png?accountOid=12049164&type=6",
+        "result_account_name": "QuickScalper / DSys Beta",
         "logo": "/assets/products/quickscalper/matrader-quickscalper-logo-200x200-4159.png",
         "image": "/assets/products/quickscalper/matrader-quickscalper-screen-4323.png",
         "gallery": [
