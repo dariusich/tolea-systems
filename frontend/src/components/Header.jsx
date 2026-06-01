@@ -21,7 +21,7 @@ export default function Header() {
     >
       <div className="mx-auto flex h-16 max-w-[76rem] items-center justify-between px-5">
         <Link to="/" data-testid={TID.navLogo} className="flex items-center gap-2.5" aria-label="Tolea Systems">
-          <BrandLogo compact className="max-w-[168px]" />
+          <BrandLogo compact className="max-w-[190px]" imageClassName="h-9 md:h-10" />
         </Link>
 
         <nav className="hidden items-center gap-8 lg:flex">

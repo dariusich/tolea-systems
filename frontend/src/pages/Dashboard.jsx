@@ -533,15 +533,15 @@ function LiveResultCard({ product, account }) {
       )}
 
       <div className="live-result-actions">
+        <Link className="btn-gold" to={`/systems/${product.slug}`}>Product details</Link>
         {profileUrl ? (
-          <a className="btn-gold" href={profileUrl} target="_blank" rel="noreferrer">
+          <a className="btn-ghost-gold" href={profileUrl} target="_blank" rel="noreferrer">
             Open Myfxbook <ExternalLink size={15} />
           </a>
         ) : (
           <span className="btn-ghost-gold live-result-disabled">Myfxbook coming soon</span>
         )}
         {liveAccount && <Link className="btn-ghost-gold" to={`/live-results/a/${account.slug}`}>Open MT5 dashboard</Link>}
-        <Link className="btn-ghost-gold" to={`/systems/${product.slug}`}>Product details</Link>
       </div>
     </article>
   );

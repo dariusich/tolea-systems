@@ -14,7 +14,6 @@ import { api } from "@/lib/api";
 import { money, number } from "@/lib/format";
 import ProductCard from "@/components/ProductCard";
 import PageHelmet from "@/components/PageHelmet";
-import BrandLogo from "@/components/BrandLogo";
 import { EquityChart } from "@/components/Charts";
 
 const DISCLAIMER = "Trading involves risk. Past performance does not guarantee future results. Expert Advisors can generate drawdown, especially in volatile market conditions. Use proper risk management.";
@@ -83,14 +82,15 @@ export default function Home() {
           <div className="overview-hero-inner">
             <div className="overview-hero-copy fade-up">
               <div className="overview-hero-kicker">
-                <BrandLogo className="max-w-[188px] md:max-w-[214px]" />
                 <p className="overview-badge">
                   <BadgeCheck className="h-4 w-4" />
                   Optimized Expert Advisors for MetaTrader 4/5
                 </p>
               </div>
-              <h1 className="mt-8 max-w-[680px] text-[clamp(2.7rem,4.7vw,4.55rem)] font-black leading-[1.08] tracking-[0]">
-                Clean automated trading systems with <span className="gold-gradient-text">verified results.</span>
+              <h1 className="mt-8 max-w-[620px] text-[clamp(2.35rem,4.2vw,3.75rem)] font-black leading-[1.08] tracking-[0]">
+                <span className="block">Clean automated</span>
+                <span className="block">trading systems</span>
+                <span className="block">with <span className="gold-gradient-text">verified results.</span></span>
               </h1>
               <p className="mt-6 max-w-[580px] text-[16px] leading-7 text-[color:var(--color-muted)] md:text-[18px]">
                 A focused catalog of gold trading systems delivered with custom set files, setup guidance, and transparent public result links before you use them.
